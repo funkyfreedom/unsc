@@ -36,6 +36,7 @@ async function run(raw) {
   $('lchart').innerHTML = '<p class="muted">Counting…</p>';
   const search = await pagefind.search(term, { filters: { type: ['Resolution'] } });
   const counts = search.filters?.year || {};
+  $('lchart').tabIndex = 0;
   $('lchart').innerHTML = chart(q.replace(/"/g, ''), counts, search.results.length);
   const first = await Promise.all(search.results.slice(0, 12).map((r) => r.data()));
   $('llist').innerHTML = search.results.length

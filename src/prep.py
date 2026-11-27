@@ -176,7 +176,13 @@ for n in range(1, N + 1):
         url_en = ''
         draft = (j or {}).get('draft_resolution', '')
         meeting = (j or {}).get('outcome_letter', '')
-        y = str(int((j or {}).get('MS_in_favour_count') or 0)) if (j or {}).get('MS_in_favour_count') else ''; no = str(int((j or {}).get('MS_against_count') or 0)); ab = str(int((j or {}).get('MS_abstaining_count') or 0)); nv = ''
+        jj = j or {}
+        if jj.get('MS_in_favour'):
+            y, no, ab = str(len(jj['MS_in_favour'])), str(len(jj.get('MS_against') or [])), str(len(jj.get('MS_abstaining') or []))
+            present = len(jj['MS_in_favour']) + len(jj.get('MS_against') or []) + len(jj.get('MS_abstaining') or [])
+            nv = str(15 - present) if present <= 15 else ''
+        else:
+            y, no, ab, nv = '', '', '', ''
     topic = re.sub(r'\s+', ' ', topic).strip()
     if topic.lower().startswith('on '):
         topic = topic[3:]
@@ -192,7 +198,7 @@ for n in range(1, N + 1):
                 return int(v)
             except Exception:
                 return None
-        unanimous = (num(y) == 15 and num(no) == 0 and num(ab) == 0) if num(y) is not None else None
+        unanimous = (num(y) == 15) if num(y) is not None else None
         member_votes = {}
     low = re.sub(r'\s+', ' ', text.lower())
     flags = {k: bool(re.search(p, low)) for k, p in TERMS.items()}
@@ -200,7 +206,7 @@ for n in range(1, N + 1):
     sym = f'S/RES/{n} ({year})'
     out.append(dict(
         n=n, sym=sym, year=year, date=date, era=era_of(year), topic=topic, region=region_of(topic, text),
-        country=country, subjects=subjects[:12], yes=y, no=no, abst=ab, nonvote=nv, unanimous=unanimous,
+        country=country.split('|')[0] if country else '', countries=[c.strip() for c in country.split('|') if c.strip()] if country else [], subjects=subjects[:12], yes=y, no=no, abst=ab, nonvote=nv, unanimous=unanimous,
         member_votes=member_votes, flags=flags, themes=themes, words=len(low.split()), text=text,
         url_en=url_en or f'https://undocs.org/en/S/RES/{n}({year})', draft=draft, meeting=meeting,
         cites=sorted(cites.get(n, [])), cited_by=sorted(cited_by.get(n, []))))
@@ -225,7 +231,9 @@ for c in SP_COUNTRIES:
         cnt[(x['Vote outcome'], v)] += 1
     countries.append(dict(key=c, name=pretty(c), slug=slugify(pretty(c)), p5=c in P5, years=years, counts={f'{a}|{b}': k for (a, b), k in cnt.items()}))
 
-json.dump(dict(eras=ERAS, themes=[(s, l) for s, l, _ in THEMES], resolutions=out, drafts=drafts, countries=countries, p5=P5),
+latest = max(ux, key=int)
+cur = sorted(set(ux[latest]['MS_in_favour'] + (ux[latest].get('MS_against') or []) + (ux[latest].get('MS_abstaining') or [])))
+json.dump(dict(current_members=cur, current_as_of=f"resolution {latest}", eras=ERAS, themes=[(s, l) for s, l, _ in THEMES], resolutions=out, drafts=drafts, countries=countries, p5=P5),
           open('/home/claude/scr/build/data.json', 'w'))
 print(len(out), 'resolutions;', len(drafts), 'failed or vetoed drafts;', len(countries), 'countries;', sum(len(v) for v in cites.values()), 'citation links')
 print(collections.Counter(r['region'] for r in out))
