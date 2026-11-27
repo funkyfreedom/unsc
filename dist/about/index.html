@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>About, sources and method | Security Council Record</title>
-<meta name="description" content="Sources, method and limits of Security Council Record, an independent record of UN Security Council resolutions and votes.">
+<title>About Security Council Record: who made it, why and how | Security Council Record</title>
+<meta name="description" content="Who made Security Council Record, the questions behind it, how it was built with Claude, its sources and how to reuse it.">
 <link rel="canonical" href="https://securitycouncilrecord.org/about/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Security Council Record">
-<meta property="og:title" content="About, sources and method">
-<meta property="og:description" content="Sources, method and limits of Security Council Record, an independent record of UN Security Council resolutions and votes.">
+<meta property="og:title" content="About Security Council Record: who made it, why and how">
+<meta property="og:description" content="Who made Security Council Record, the questions behind it, how it was built with Claude, its sources and how to reuse it.">
 <meta property="og:url" content="https://securitycouncilrecord.org/about/">
 <meta property="og:image" content="https://securitycouncilrecord.org/assets/share.png">
 <meta property="og:image:secure_url" content="https://securitycouncilrecord.org/assets/share.png">
@@ -19,8 +19,8 @@
 <meta property="og:image:alt" content="Security Council Record: every UN Security Council resolution, vote and veto since 1946">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="About, sources and method">
-<meta name="twitter:description" content="Sources, method and limits of Security Council Record, an independent record of UN Security Council resolutions and votes.">
+<meta name="twitter:title" content="About Security Council Record: who made it, why and how">
+<meta name="twitter:description" content="Who made Security Council Record, the questions behind it, how it was built with Claude, its sources and how to reuse it.">
 <meta name="twitter:image" content="https://securitycouncilrecord.org/assets/share.png">
 <meta name="twitter:image:alt" content="Security Council Record: every UN Security Council resolution, vote and veto since 1946">
 <meta name="theme-color" content="#1d1d1b">
@@ -37,26 +37,42 @@
 <a class="skip" href="#content">Skip to content</a>
 <header class="site"><div class="bar"><a class="brand" href="/" aria-label="Security Council Record, home"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#2c78d4"/><rect x="6" y="15" width="3.6" height="7" fill="#fff"/><rect x="12.2" y="10" width="3.6" height="12" fill="#fff"/><rect x="18.4" y="6" width="3.6" height="16" fill="#fff"/></svg><span>Security Council Record</span></a><nav class="main" aria-label="Main"><a href="/eras/">Eras</a><a href="/themes/">Themes</a><a href="/votes/">Members and votes</a><a href="/resolutions/">Resolutions</a><a href="/language/">Language lab</a><a href="/search/">Search</a><a href="/about/" aria-current="page">About</a></nav></div></header>
 <main id="content">
-<h1>About this record</h1>
-<p class="lede">Security Council Record is an independent, non-commercial overlay on the public documentation of the United Nations Security Council. It is not affiliated with or endorsed by the United Nations.</p>
-<h2>Sources</h2><ul>
-<li><a href="https://doi.org/10.5281/zenodo.7319780">Corpus of Resolutions: UN Security Council (CR-UNSC)</a>, Seán Fobbe, Lorenzo Gasbarri and Niccolò Ridi, version 2026-08-19, CC0. Texts and metadata of resolutions 1 to 2815, derived from the UN Digital Library.</li>
+<p class="kicker">About</p><h1>About Security Council Record</h1>
+<p class="lede">Security Council Record is an independent, non-commercial overlay on the public documentation of the UN Security Council. It's free to use and free to reuse. It is not affiliated with or endorsed by the United Nations.</p>
+<h2>Who's behind it</h2>
+<p>I'm <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a>, a social entrepreneur based near Geneva. I've worked with human rights documentation for years (I led HURIDOCS) and earlier as an ICRC delegate. I made this site with Claude, Anthropic's AI, in November 2026.</p>
+<h2>Why we made it</h2>
+<p>The Security Council's documents are public, but they're filed one by one, by year and by country. That makes it hard to step back and see what eighty years of decisions add up to.</p>
+<p>So we started with questions. How has the Council's work changed across time? Which themes came and went, and when? How did its language move, from "aggression" to "threat to the peace", from "calls upon" to "decides"? How do the great powers manage security together, and when do they split? Who votes with whom, and how has that changed since the Cold War?</p>
+<p>Answering those by hand would take a research team months. We used AI to read and count every resolution and every recorded vote, then checked the results against the documents.</p>
+<h2>How it was made</h2>
+<ol>
+<li><b>Gathering the documents.</b> We collected the full text of all 2,835 resolutions from 1946 to 2026 and every recorded vote since 1946, including 270 vetoed drafts, from the open sources listed below.</li>
+<li><b>Cleaning and joining them.</b> Each resolution was matched by number across the sources. Old scanned texts were taken from the hand-corrected CR-UNSC corpus; votes from the Sciences Po database; resolutions adopted after January 2026 from the UN's own machine-readable files.</li>
+<li><b>Counting.</b> Claude wrote the code that counts words and phrases in every text, tags themes and regions, and computes votes, vetoes, abstentions and how often members vote alike.</li>
+<li><b>Finding the eras.</b> We split the eighty years at political breaks, then checked each break against the data: a jump in output, a shift in unanimity, a new veto caster or new words.</li>
+<li><b>Checking.</b> A separate script recounts every figure on the site from the raw files and compares it with what the pages say. It also cross-checks our Chapter VII counts against the flags published with the CR-UNSC corpus. Where a source had a gap (one resolution missing from the vote file), we used the UN's data and say so.</li>
+<li><b>Building the site.</b> Every page is generated from the data, so a number in the text can't drift from the number in the chart. Search runs in your browser with <a href="https://pagefind.app">Pagefind</a>. Pages are checked for accessibility on desktop and phone.</li>
+</ol>
+<p>Claude did the reading, counting, coding and first drafts. I chose the questions, reviewed the findings and made the editorial calls. The resolution texts on this site are the UN's own words, reproduced as published. No resolution has been summarised or rewritten by AI.</p>
+<h2>Sources and credits</h2><ul>
+<li><a href="https://doi.org/10.5281/zenodo.7319780">Corpus of Resolutions: UN Security Council (CR-UNSC)</a>, Seán Fobbe, Lorenzo Gasbarri and Niccolò Ridi, version 2026-08-19, CC0. Texts, metadata and citation network of resolutions 1 to 2815, derived from the UN Digital Library.</li>
+<li><a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a>, Benoît Martin, Sciences Po Atelier de cartographie and GRAM (Groupe de recherche sur l'action multilatérale), 2026, CC BY 4.0. Every recorded vote, including vetoed and failed drafts, 1946 to 2025.</li>
 <li><a href="https://github.com/UNxml/SCresolutions">Machine-readable Security Council resolutions</a> (AKN4UN XML), United Nations. Texts and metadata of resolutions adopted after January 2026. The United Nations is the source of this information.</li>
-<li><a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a>, Benoît Martin, Sciences Po Atelier de cartographie and GRAM, 2026, CC BY 4.0. Every recorded vote, including vetoed and failed drafts, 1946 to 2025.</li>
+<li>Cross-checks: <a href="https://github.com/intreleng-research/unsc-dataset">The UN Security Council Dataset</a> (PCRC 2022) and the <a href="https://github.com/ToastyTraining/UnitedNations">UN Resolutions dataset</a> (ToastyTraining).</li>
 <li>Official documents: the <a href="https://main.un.org/securitycouncil/en">Security Council website</a>, the <a href="https://digitallibrary.un.org">UN Digital Library</a> and the <a href="https://www.un.org/securitycouncil/content/repertoire">Repertoire of the Practice of the Security Council</a>.</li></ul>
 <h2>Method</h2>
-<p><b>Eras</b> follow political breaks. The opening events are history; every figure is computed from the documents.</p>
-<p><b>Terms</b> such as "threat to the peace", "act of aggression" or "Acting under Chapter VII" are counted with text patterns that allow for scanning errors, and checked by hand on samples. A count means the phrase appears in the text, not necessarily as a formal finding; "breach of the peace" is counted only where the Council determines or states that a breach exists.</p>
-<p><b>Themes</b> (women, children, civilians and others) mark resolutions whose text mentions the subject.</p>
-<p><b>Regions</b> come from the resolution title: the region of the situation it concerns. Admissions, elections and appointments are "institutional"; general subjects are "thematic".</p>
-<p><b>Votes</b> come from the Sciences Po database. Unanimous means every member present voted yes. A contested vote is one with any no vote or abstention, or a draft that failed. Vetoes are counted as no votes by permanent members on vetoed drafts, so a draft vetoed by two members counts for both. China's seat was held by the Republic of China until October 1971; the Soviet seat passed to the Russian Federation in December 1991.</p>
-<p><b>Citations</b> between resolutions come from the CR-UNSC citation network.</p>
-<h2>Corrections and reuse</h2><p>This site, its data and its code are in the public domain. Errors in the underlying documents are reproduced as published; spotted a problem in ours? Write to daniel.desposito@gmail.com.</p>
+<p><b>Terms</b> such as "threat to the peace", "act of aggression" or "Acting under Chapter VII" are counted with text patterns that allow for scanning errors, and checked by hand on samples. A count means the phrase appears in the text, which isn't always a formal finding. "Breach of the peace" is counted only where the Council determines or states that a breach exists.</p>
+<p><b>Themes</b> (women, children, civilians and others) mark resolutions whose text mentions the subject. <b>Regions</b> come from the resolution title: the region of the situation it concerns. Admissions, elections and appointments are "institutional"; general subjects are "thematic".</p>
+<p><b>Votes:</b> unanimous means every member present voted yes. A contested vote has at least one no vote or abstention, or is a draft that failed. Vetoes are counted as no votes by permanent members on vetoed drafts, so a draft vetoed by two members counts for both. China's seat was held by the Republic of China until October 1971; the Soviet seat passed to the Russian Federation in December 1991.</p>
+<h2>Reuse it</h2>
+<p>Everything we made here (the analysis, charts, text, data tables and code) is free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>. Just credit us: <i>Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026</i>. The underlying sources keep their own open licences; please credit them too.</p>
+<p>Want the data files or the code, or spotted a mistake? Write to daniel.desposito@gmail.com.</p>
 </main>
 <footer class="site"><div class="bar">
 <p><b>Security Council Record</b> is an independent record of every resolution, vote and veto of the United Nations Security Council since 1946. It is not affiliated with or endorsed by the United Nations. For official documents, use the <a href="https://main.un.org/securitycouncil/en">Security Council website</a> and the <a href="https://digitallibrary.un.org">UN Digital Library</a>.</p>
 <p>Built on the documentation of the Security Council, the <a href="https://doi.org/10.5281/zenodo.7319780">CR-UNSC corpus</a> (Fobbe, Gasbarri and Ridi, CC0), the <a href="https://github.com/UNxml/SCresolutions">UN machine-readable resolutions</a> and the <a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a> (Sciences Po Atelier de cartographie and GRAM, CC BY 4.0). <a href="/about/">Method and sources</a>.</p>
-<p>Made by Daniel D'Esposito. Designed to work on any phone and with screen readers. Content in the public domain.</p>
+<p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
 </div></footer>
 </body>
 </html>

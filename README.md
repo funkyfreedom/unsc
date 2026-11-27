@@ -17,4 +17,4 @@ An independent record of every UN Security Council resolution, vote and veto sin
 - UN machine-readable Security Council resolutions (github.com/UNxml/SCresolutions)
 - UNSC votes since 1946 database, Benoît Martin, Sciences Po Atelier de cartographie and GRAM, 2026, CC BY 4.0
 
-Not affiliated with or endorsed by the United Nations. Site, data and code in the public domain.
+Made by Daniel D'Esposito with Claude. Not affiliated with or endorsed by the United Nations. Site, data and code free to reuse under CC BY 4.0: credit "Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026". The sources keep their own licences.
