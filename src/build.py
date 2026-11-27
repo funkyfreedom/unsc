@@ -175,7 +175,7 @@ def lang_chart():
 def veto_chart():
     mem = [dict(name=P5NAME[k], values=[s[i]['vetoN'][k] for i in range(8)]) for k in P5KEYS]
     return small_multiples(mem, ERA_LABELS[:7] + ['2022-25'], 'The veto moved from Moscow to Washington, then back to Moscow and Beijing',
-                           f'Vetoed drafts on which each permanent member voted no, by era, 1946 to {LAST_FULL}')
+                           f'Vetoed drafts on which each permanent member voted no, by era, 1946 to {LAST_FULL}', accent=RED)
 
 def agree_chart():
     ser = [dict(name='US and France', values=AGREE['US and France'], color=GREY), dict(name='Russia and China', values=AGREE['Russia and China'], color=GREY),
@@ -212,7 +212,11 @@ def bare(svg):
     return svg.replace(f'viewBox="0 0 {w} {h}"', f'viewBox="0 52 {w} {h-52}"', 1)
 
 def fig(svg, cap):
-    return f'<figure tabindex="0" aria-label="Chart">{svg}<figcaption>{cap}</figcaption></figure>'
+    # title and subtitle as text above the chart, so they wrap on a phone; only the chart scrolls
+    m = re.search(r'</title><text[^>]*>(.*?)</text><text[^>]*>(.*?)</text>', svg)
+    t, sub = (m.group(1), m.group(2)) if m else ('', '')
+    head = f'<p class="ctitle">{t}</p><p class="csub">{sub}</p>' if m else ''
+    return f'<figure>{head}<div class="cscroll" tabindex="0" role="region" aria-label="Chart: {t or "chart"}">{bare(svg) if m else svg}</div><figcaption>{cap}</figcaption></figure>'
 
 CAP_VOTES = f'Source: UNSC votes since 1946 database, Sciences Po Atelier de cartographie and GRAM (CC BY 4.0), 1946 to {LAST_FULL}.'
 CAP_TEXT = f'Source: full text of all {fmt(len(R))} resolutions (CR-UNSC corpus and UN machine-readable resolutions). Term counts are pattern matches, checked by hand on samples.'
@@ -342,7 +346,7 @@ def tools_html():
 
 # ------------- HOME -------------
 def home():
-    stats = f'''<div class="stats"><div><b>{fmt(len(R))}</b><span>resolutions, 1946 to 2026</span></div><div><b>{TOTAL_VETOED}</b><span>vetoed drafts</span></div><div><b>{len(COUNTRIES)}</b><span>countries that have sat on the Council</span></div><div><b>{fmt(len(allvotes))}</b><span>recorded votes</span></div></div>'''
+    stats = f'''<div class="stats"><div><b>{fmt(len(R))}</b><span>resolutions, 1946 to 2026</span></div><div class="red"><b>{TOTAL_VETOED}</b><span>vetoed drafts</span></div><div><b>{len(COUNTRIES)}</b><span>countries that have sat on the Council</span></div><div><b>{fmt(len(allvotes))}</b><span>recorded votes</span></div></div>'''
     finds = ''.join(f'<li><b>{e(t)}.</b> {e(x)} <a class="more" href="/themes/{sl}/">Read more</a></li>' for sl, t, x in THEME_PAGES)
     glance = f'The Council adopted about {s[0]["per_year"]} resolutions a year in its first era and over 60 a year from 1994 to 2010. Output has fallen every year since 2021, to {Y[LAST_FULL]["n"]} in {LAST_FULL}, the lowest since {lowest_since}. The quiet years of the Cold War were divided years: unanimity often sat below half.'
     maxn = max(Y[y]['n'] for y in FULL_YEARS); bw = 560 / len(FULL_YEARS)
@@ -625,7 +629,7 @@ def misc_pages():
 <h2>Members</h2><p>Fifteen members: five permanent (China, France, Russia, the United Kingdom and the United States) and ten elected by the General Assembly for two-year terms. The Council had eleven members until the Charter amendment of 1965 enlarged it. The presidency rotates every month. <a href="/votes/">Current members and voting records</a>.</p>
 <h2>How it decides</h2><p>A resolution needs nine votes in favour and no veto from a permanent member. <a href="/themes/the-veto/">What veto power is, and every veto since 1946</a>.</p>
 <h2>What it can do</h2><p>Under Chapter VI of the Charter the Council recommends ways to settle disputes peacefully. Under Chapter VII, once it determines a "threat to the peace, breach of the peace, or act of aggression" (Article 39), it can impose binding measures: sanctions, arms embargoes, peace operations, tribunals, and the use of force by member states. <a href="/themes/language-of-threat/">How the Council used those three words</a> and <a href="/themes/from-advising-to-ordering/">how Chapter VII became routine</a>.</p>
-<h2>In numbers</h2><div class="stats"><div><b>{fmt(len(R))}</b><span>resolutions adopted, 1946 to 2026</span></div><div><b>{TOTAL_VETOED}</b><span>drafts vetoed</span></div><div><b>{Y[LAST_FULL]["n"]}</b><span>resolutions in {LAST_FULL}</span></div><div><b>{Y[LAST_FULL]["u"]}%</b><span>adopted unanimously in {LAST_FULL}</span></div></div>
+<h2>In numbers</h2><div class="stats"><div><b>{fmt(len(R))}</b><span>resolutions adopted, 1946 to 2026</span></div><div class="red"><b>{TOTAL_VETOED}</b><span>drafts vetoed</span></div><div><b>{Y[LAST_FULL]["n"]}</b><span>resolutions in {LAST_FULL}</span></div><div><b>{Y[LAST_FULL]["u"]}%</b><span>adopted unanimously in {LAST_FULL}</span></div></div>
 <p>Official information: the <a href="https://main.un.org/securitycouncil/en">Security Council website</a>.</p>'''
     write('/about/security-council/', page('/about/security-council/', 'What is the UN Security Council? Members, veto and powers', 'What the UN Security Council is: its 15 members, the five permanent members and veto power, how it decides, and what Chapter VII allows.', expl, crumbs=[('/', 'Home'), ('/about/', 'About'), (None, 'What is the Security Council?')]))
     write('/about/', page('/about/', 'About Security Council Record: who made it, why and how', 'Who made Security Council Record, the questions behind it, how it was built with Claude, its sources and how to reuse it.', about))

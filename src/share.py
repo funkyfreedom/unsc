@@ -15,6 +15,7 @@ x0,y0=60,22
 d.rounded_rectangle((x0*S,y0*S,(x0+44)*S,(y0+44)*S),radius=8*S,fill=blue)
 u=44/28
 for x,y in ((6,15),(12.2,10),(18.4,6)): d.rectangle(((x0+x*u)*S,(y0+y*u)*S,(x0+(x+3.6)*u)*S,(y0+22*u)*S),fill='white')
+d.rectangle(((x0+4.6*u)*S,(y0+22*u)*S,(x0+23.4*u)*S,(y0+23.6*u)*S),fill=(214,40,40))
 d.text((118*S,29*S),'Security Council Record',font=f('Inter-ExtraBold.otf',30),fill='white')
 d.text((W*S-60*S,34*S),'securitycouncilrecord.org',font=f('Inter-Medium.otf',22),fill=light,anchor='ra')
 # headline

@@ -12,6 +12,7 @@ def logo(size, pad=0.0, bg_white=False):
     u=w/28
     for x,y in ((6,15),(12.2,10),(18.4,6)):
         d.rectangle((p+x*u,p+y*u,p+(x+3.6)*u,p+22*u),fill='white')
+    d.rectangle((p+4.6*u,p+22*u,p+23.4*u,p+23.6*u),fill=(214,40,40))
     return im.resize((size,size),Image.LANCZOS)
 D=DIST+'/'
 logo(48).save(D+'favicon-48.png'); logo(96).save(D+'favicon-96.png')

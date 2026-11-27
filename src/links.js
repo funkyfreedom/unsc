@@ -13,7 +13,7 @@ async function copy(url) {
 const base = () => location.origin + location.pathname + location.search;
 
 const h1 = document.querySelector('main h1');
-if (h1 && !h1.closest('a')) {
+if (h1 && !h1.closest('a') && location.pathname !== '/') {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'copylink'; b.textContent = 'Copy link';
   b.setAttribute('aria-label', 'Copy the link to this page');
