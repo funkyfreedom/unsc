@@ -1,0 +1,16 @@
+{
+  "name": "security-council-record",
+  "private": true,
+  "description": "Static site generator for securitycouncilrecord.org",
+  "license": "MIT",
+  "scripts": {
+    "prep": "python3 src/prep.py",
+    "site": "python3 src/build.py && pagefind --site dist && python3 src/export.py && python3 src/share.py && python3 src/icons.py",
+    "build": "npm run prep && npm run site",
+    "verify": "python3 src/verify.py"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "5.3.0",
+    "pagefind": "1.6.0"
+  }
+}

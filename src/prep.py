@@ -1,14 +1,15 @@
-"""Build the Security Council Record dataset from the merged sources.
+"""Merge the sources into one dataset: build/data.json.
 
-Inputs (in /home/claude): data/resolutions.json (texts merged earlier),
-crunsc/ (CR-UNSC metadata, citations), unxml/scresolutions/data_extract,
-ateliercartographie/bd-unsc (Sciences Po votes).
-Output: scr/build/data.json
+Sources (see sources/README.md):
+  CR-UNSC corpus: texts and metadata of resolutions 1 to 2815, citation network
+  UN machine-readable resolutions (UNxml/SCresolutions): texts and metadata after January 2026
+  Sciences Po UNSC votes since 1946: every recorded vote, adopted, vetoed and failed
 """
 import csv, json, re, collections, glob, os
 import xml.etree.ElementTree as ET
 
-ROOT = '/home/claude'
+from config import *
+os.makedirs(BUILD, exist_ok=True)
 csv.field_size_limit(10**9)
 
 ERAS = [
@@ -87,10 +88,28 @@ def slugify(s):
     return s.strip('-')
 
 # ---------- load ----------
-res_old = {r['n']: r for r in json.load(open(f'{ROOT}/data/resolutions.json'))}
-meta = {int(m['res_no']): m for m in csv.DictReader(open(glob.glob(f'{ROOT}/crunsc/*META*/*.csv')[0], encoding='utf-8'))}
+meta = {int(m['res_no']): m for m in csv.DictReader(open(CR_META(), encoding='utf-8'))}
+
+# full texts: CR-UNSC for 1 to 2815, UN XML (English) for later resolutions
+texts = {}
+for f in glob.glob(os.path.join(CR_TEXT_DIR(), 'S_RES_*_EN*.txt')):
+    texts[int(re.search(r'S_RES_(\d+)_', os.path.basename(f)).group(1))] = re.sub(r'\s+', ' ', open(f, errors='ignore').read())
+def xml_text(path):
+    try:
+        root = ET.parse(path).getroot()
+    except Exception:
+        return ''
+    return re.sub(r'\s+', ' ', ' '.join(' '.join(el.itertext()) for el in root.iter() if el.tag.split('}')[-1] in ('p', 'heading', 'num')))
+for f in glob.glob(os.path.join(UN_XML, '**', '*.xml'), recursive=True):
+    if ('/English/' in f or '/Pre-2020/' in f) and '/PRST/' not in f and 'Not adopted' not in f:
+        m = re.search(r'S_RES_(\d+)', os.path.basename(f))
+        if m and int(m.group(1)) not in texts:
+            t = xml_text(f)
+            if t:
+                texts[int(m.group(1))] = t
+
 ux = {}
-for f in glob.glob(f'{ROOT}/unxml/scresolutions/data_extract/*.json'):
+for f in glob.glob(os.path.join(UN_XML, 'data_extract', '*.json')):
     raw = open(f).read().strip()
     try:
         items = json.loads(raw)
@@ -102,8 +121,7 @@ for f in glob.glob(f'{ROOT}/unxml/scresolutions/data_extract/*.json'):
             ux[int(m.group(1))] = j
 
 # Sciences Po votes
-sp_path = f'{ROOT}/ateliercartographie/bd-unsc/src/lib/data/Clean BD pour export – UNSC votes 1946-2025.csv'
-sp_rows = list(csv.DictReader(open(sp_path, encoding='utf-8')))
+sp_rows = list(csv.DictReader(open(SCIENCES_PO_CSV(), encoding='utf-8')))
 META_COLS = ['Vote in the DB', 'UN classification', 'Vote outcome', 'Vote outcome typology-Observable', 'Resolution number', 'Date', 'Official full title', 'Title-Observable', 'Yes', 'No', 'Abstentions', 'Non-Voting', 'Total', '(of which veto)']
 SP_COUNTRIES = [c for c in sp_rows[0].keys() if c not in META_COLS and c.strip()]
 P5 = {'CHINA': 'China', 'FRANCE': 'France', 'RUSSIAN FEDERATION/USSR': 'Russia (USSR until 1991)', 'UNITED KINGDOM': 'United Kingdom', 'UNITED STATES': 'United States'}
@@ -125,7 +143,7 @@ for x in sp_rows:
 
 # citations
 cites = collections.defaultdict(set)
-g = ET.parse(glob.glob(f'{ROOT}/crunsc/*GRAPHML*/*.graphml')[0]).getroot()
+g = ET.parse(CR_GRAPHML()).getroot()
 ns = {'g': 'http://graphml.graphdrawing.org/xmlns'}
 keys = {k.get('id'): k.get('attr.name') for k in g.findall('g:key', ns)}
 node_sym = {}
@@ -145,13 +163,15 @@ for a, bs in cites.items():
 
 # ---------- assemble ----------
 out = []
-N = max(res_old)
+N = max(set(meta) | set(ux))
+missing = [n for n in range(1, N + 1) if n not in texts]
+if missing:
+    raise SystemExit(f'No text for resolutions {missing[:10]}')
 for n in range(1, N + 1):
-    r = res_old[n]
     m = meta.get(n)
     j = ux.get(n)
     sp = sp_by_res.get(n)
-    text = r['text'] or ''
+    text = texts[n]
     if m:
         topic = m['topic'] if m['topic'] not in ('', 'NA') else ''
         date = m['date']
@@ -162,10 +182,10 @@ for n in range(1, N + 1):
         meeting = m['meeting_record'] if m['meeting_record'] != 'NA' else ''
         y, no, ab, nv = m['vote_yes'], m['vote_no'], m['vote_abstention'], m['vote_nonvote']
     else:
-        title = (j or {}).get('resolution_title', '') or r['title']
+        title = (j or {}).get('resolution_title', '') or f'Resolution {n}'
         mm = re.search(r'\[(.*)\]?', title)
         topic = (mm.group(1).rstrip(']') if mm else title)
-        date = r['date']
+        date = ''
         try:
             from datetime import datetime
             date = datetime.strptime(re.sub(r'\s+', ' ', (j or {}).get('adoption_date', '')).strip(), '%d %B %Y').strftime('%Y-%m-%d')
@@ -186,8 +206,8 @@ for n in range(1, N + 1):
     topic = re.sub(r'\s+', ' ', topic).strip()
     if topic.lower().startswith('on '):
         topic = topic[3:]
-    topic = topic[:1].upper() + topic[1:] if topic else (r['title'] or f'Resolution {n}')
-    year = int(date[:4]) if date else r['year']
+    topic = topic[:1].upper() + topic[1:] if topic else f'Resolution {n}'
+    year = int(date[:4]) if date else int(re.search(r'\((\d{4})\)', (j or {}).get('symbol', '(0)')).group(1))
     if sp:
         unanimous = 'unanimity' in sp['kind']
         y, no, ab, nv = sp['yes'], sp['no'], sp['abst'], sp['nonvote']
@@ -234,6 +254,6 @@ for c in SP_COUNTRIES:
 latest = max(ux, key=int)
 cur = sorted(set(ux[latest]['MS_in_favour'] + (ux[latest].get('MS_against') or []) + (ux[latest].get('MS_abstaining') or [])))
 json.dump(dict(current_members=cur, current_as_of=f"resolution {latest}", eras=ERAS, themes=[(s, l) for s, l, _ in THEMES], resolutions=out, drafts=drafts, countries=countries, p5=P5),
-          open('/home/claude/scr/build/data.json', 'w'))
+          open(os.path.join(BUILD, 'data.json'), 'w'))
 print(len(out), 'resolutions;', len(drafts), 'failed or vetoed drafts;', len(countries), 'countries;', sum(len(v) for v in cites.values()), 'citation links')
 print(collections.Counter(r['region'] for r in out))

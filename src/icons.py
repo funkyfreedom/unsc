@@ -1,5 +1,8 @@
+"""Draw the favicons, app icons and logo into dist/."""
 from PIL import Image, ImageDraw
-import json
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from config import *
 BLUE=(44,120,212)
 def logo(size, pad=0.0, bg_white=False):
     S=size*4
@@ -10,7 +13,7 @@ def logo(size, pad=0.0, bg_white=False):
     for x,y in ((6,15),(12.2,10),(18.4,6)):
         d.rectangle((p+x*u,p+y*u,p+(x+3.6)*u,p+22*u),fill='white')
     return im.resize((size,size),Image.LANCZOS)
-D='dist/'
+D=DIST+'/'
 logo(48).save(D+'favicon-48.png'); logo(96).save(D+'favicon-96.png')
 logo(192).save(D+'icon-192.png'); logo(512).save(D+'icon-512.png')
 logo(180,pad=0.08,bg_white=True).convert('RGB').save(D+'apple-touch-icon.png')

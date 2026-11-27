@@ -65,14 +65,24 @@
 <p><b>Terms</b> such as "threat to the peace", "act of aggression" or "Acting under Chapter VII" are counted with text patterns that allow for scanning errors, and checked by hand on samples. A count means the phrase appears in the text, which isn't always a formal finding. "Breach of the peace" is counted only where the Council determines or states that a breach exists.</p>
 <p><b>Themes</b> (women, children, civilians and others) mark resolutions whose text mentions the subject. <b>Regions</b> come from the resolution title: the region of the situation it concerns. Admissions, elections and appointments are "institutional"; general subjects are "thematic".</p>
 <p><b>Votes:</b> unanimous means every member present voted yes. A contested vote has at least one no vote or abstention, or is a draft that failed. Vetoes are counted as no votes by permanent members on vetoed drafts, so a draft vetoed by two members counts for both. China's seat was held by the Republic of China until October 1971; the Soviet seat passed to the Russian Federation in December 1991.</p>
+<h2 id="download-the-data">Download the data</h2>
+<p>Every table behind the site is a plain CSV file you can open in Excel, Google Sheets or any analysis tool. Each column is explained in the <a href="https://github.com/funkyfreedom/unsc/blob/main/data/README.md">data dictionary</a>.</p>
+<ul>
+<li><a href="/data/resolutions.csv" download>resolutions.csv</a>: all 2,835 resolutions, one row each, with date, subject, region, vote counts, Charter terms and themes</li>
+<li><a href="/data/votes.csv" download>votes.csv</a>: every member's vote on every recorded draft since 1946, one row per member per vote</li>
+<li><a href="/data/drafts.csv" download>drafts.csv</a>: the 393 drafts that were vetoed or failed, and who vetoed them</li>
+<li><a href="/data/citations.csv" download>citations.csv</a>: which resolution cites which</li>
+<li><a href="/data/eras.csv" download>eras.csv</a> and <a href="/data/countries.csv" download>countries.csv</a>: the era and country figures shown on the site</li>
+</ul>
+<h2>Open source</h2>
+<p>The code that builds this site is public on <a href="https://github.com/funkyfreedom/unsc">GitHub</a>. Anyone can download the same sources, rebuild every page and run the check script that recounts each figure. If you find a mistake, <a href="https://github.com/funkyfreedom/unsc/issues">open an issue</a> or write to daniel.desposito@gmail.com.</p>
 <h2>Reuse it</h2>
-<p>Everything we made here (the analysis, charts, text, data tables and code) is free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>. Just credit us: <i>Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026</i>. The underlying sources keep their own open licences; please credit them too.</p>
-<p>Want the data files or the code, or spotted a mistake? Write to daniel.desposito@gmail.com.</p>
+<p>The analysis, charts, text and data tables are free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>, and the code under the <a href="https://github.com/funkyfreedom/unsc/blob/main/LICENSE">MIT licence</a>. Just quote us: <i>Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026</i>. The underlying sources keep their own open licences; please credit them too.</p>
 </main>
 <footer class="site"><div class="bar">
 <p><b>Security Council Record</b> is an independent record of every resolution, vote and veto of the United Nations Security Council since 1946. It is not affiliated with or endorsed by the United Nations. For official documents, use the <a href="https://main.un.org/securitycouncil/en">Security Council website</a> and the <a href="https://digitallibrary.un.org">UN Digital Library</a>.</p>
 <p>Built on the documentation of the Security Council, the <a href="https://doi.org/10.5281/zenodo.7319780">CR-UNSC corpus</a> (Fobbe, Gasbarri and Ridi, CC0), the <a href="https://github.com/UNxml/SCresolutions">UN machine-readable resolutions</a> and the <a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a> (Sciences Po Atelier de cartographie and GRAM, CC BY 4.0). <a href="/about/">Method and sources</a>.</p>
-<p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
+<p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. <a href="/about/#download-the-data">Data</a> and <a href="https://github.com/funkyfreedom/unsc">code</a> are open. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
 </div></footer>
 </body>
 </html>

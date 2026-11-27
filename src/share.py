@@ -1,9 +1,12 @@
+"""Draw the social share image (dist/assets/share-v2.png). Needs the Inter .otf fonts."""
 from PIL import Image, ImageDraw, ImageFont
-import json
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from config import *
 W,H=1200,630
 S=2
 im=Image.new('RGB',(W*S,H*S),'white'); d=ImageDraw.Draw(im)
-F='/usr/share/fonts/opentype/inter/'
+F=INTER_OTF.rstrip('/')+'/'
 f=lambda n,s: ImageFont.truetype(F+n,s*S)
 blue=(44,120,212); bink=(29,95,174); grey=(196,195,182); ink=(29,29,27); muted=(100,99,93); light=(217,216,210)
 # ink header
@@ -18,7 +21,7 @@ d.text((W*S-60*S,34*S),'securitycouncilrecord.org',font=f('Inter-Medium.otf',22)
 d.text((60*S,122*S),'80 years of the UN Security Council',font=f('Inter-ExtraBold.otf',58),fill=ink)
 d.text((60*S,198*S),'Patterns in themes, voting and language since 1946',font=f('Inter-Regular.otf',28),fill=muted)
 # chart
-Y=json.load(open('dist/assets/years.json'))
+Y=json.load(open(os.path.join(DIST,'assets','years.json')))
 ys=[int(k) for k in Y if int(k)<=2025]; mx=max(Y[str(y)] for y in ys)
 left,right,base,top=60,W-60,560,262
 bw=(right-left)/len(ys)
@@ -38,4 +41,4 @@ d.line((left*S,base*S,right*S,base*S),fill=(185,184,174),width=2*S)
 for y in (1950,1970,1990,2010):
     i=ys.index(y); d.text(((left+i*bw+bw/2)*S,(base+12)*S),str(y),font=f('Inter-Medium.otf',18),fill=muted,anchor='ma')
 d.text((60*S,600*S),'Resolutions adopted per year, 1946 to 2025',font=f('Inter-Medium.otf',18),fill=muted)
-im.resize((W,H),Image.LANCZOS).save('dist/assets/share-v2.png',optimize=True)
+im.resize((W,H),Image.LANCZOS).save(os.path.join(DIST,'assets','share-v2.png'),optimize=True)

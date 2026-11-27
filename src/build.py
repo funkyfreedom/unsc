@@ -1,10 +1,9 @@
-"""Generate the static site for Security Council Record into ./dist"""
+"""Generate the static site into dist/ from build/data.json (made by prep.py)."""
 import json, os, re, glob, shutil, collections, statistics
 from lib import *
+from config import *
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-DIST = os.path.join(HERE, 'dist')
-D = json.load(open(os.path.join(HERE, 'build', 'data.json')))
+D = json.load(open(os.path.join(BUILD, 'data.json')))
 R = D['resolutions']; ERAS = D['eras']; DRAFTS = D['drafts']; COUNTRIES = D['countries']
 THEMES = dict(D['themes'])
 BYN = {r['n']: r for r in R}
@@ -111,11 +110,11 @@ shutil.rmtree(DIST, ignore_errors=True)
 os.makedirs(os.path.join(DIST, 'assets', 'fonts'))
 open(os.path.join(DIST, 'assets', 'site.css'), 'w').write(CSS)
 for f in ('inter-latin-wght-normal.woff2', 'inter-latin-ext-wght-normal.woff2'):
-    shutil.copy(os.path.join(HERE, 'tools/node_modules/@fontsource-variable/inter/files', f), os.path.join(DIST, 'assets', 'fonts', f))
+    shutil.copy(os.path.join(FONTS_WOFF, f), os.path.join(DIST, 'assets', 'fonts', f))
 open(os.path.join(DIST, 'favicon.svg'), 'w').write(LOGO.replace('aria-hidden="true"', 'xmlns="http://www.w3.org/2000/svg"'))
 json.dump({str(y): Y[y]['n'] for y in years}, open(os.path.join(DIST, 'assets', 'years.json'), 'w'))
 for js in ('search.js', 'lab.js'):
-    shutil.copy(os.path.join(HERE, js), os.path.join(DIST, 'assets', js))
+    shutil.copy(os.path.join(SRC, js), os.path.join(DIST, 'assets', js))
 
 # ------------- shared fragments -------------
 def era_table():
@@ -465,7 +464,7 @@ def votes_pages():
                                            body, pagefind=True, filters={'type': 'Country'}, crumbs=[('/', 'Home'), ('/votes/', 'Votes'), (None, c['name'])]))
 
 # ------------- RESOLUTIONS -------------
-CR_DIR = '/home/claude/crunsc/CR-UNSC_2026-08-19_EN_TXT_BEST'
+CR_DIR = CR_TEXT_DIR()
 CR_FILES = {int(re.search(r'S_RES_(\d+)_', os.path.basename(f)).group(1)): f for f in glob.glob(CR_DIR + '/*.txt')}
 def paragraphs(n, flat):
     f = CR_FILES.get(n)
@@ -594,9 +593,19 @@ def misc_pages():
 <p><b>Terms</b> such as "threat to the peace", "act of aggression" or "Acting under Chapter VII" are counted with text patterns that allow for scanning errors, and checked by hand on samples. A count means the phrase appears in the text, which isn't always a formal finding. "Breach of the peace" is counted only where the Council determines or states that a breach exists.</p>
 <p><b>Themes</b> (women, children, civilians and others) mark resolutions whose text mentions the subject. <b>Regions</b> come from the resolution title: the region of the situation it concerns. Admissions, elections and appointments are "institutional"; general subjects are "thematic".</p>
 <p><b>Votes:</b> unanimous means every member present voted yes. A contested vote has at least one no vote or abstention, or is a draft that failed. Vetoes are counted as no votes by permanent members on vetoed drafts, so a draft vetoed by two members counts for both. China's seat was held by the Republic of China until October 1971; the Soviet seat passed to the Russian Federation in December 1991.</p>
+<h2 id="download-the-data">Download the data</h2>
+<p>Every table behind the site is a plain CSV file you can open in Excel, Google Sheets or any analysis tool. Each column is explained in the <a href="https://github.com/funkyfreedom/unsc/blob/main/data/README.md">data dictionary</a>.</p>
+<ul>
+<li><a href="/data/resolutions.csv" download>resolutions.csv</a>: all {fmt(len(R))} resolutions, one row each, with date, subject, region, vote counts, Charter terms and themes</li>
+<li><a href="/data/votes.csv" download>votes.csv</a>: every member's vote on every recorded draft since 1946, one row per member per vote</li>
+<li><a href="/data/drafts.csv" download>drafts.csv</a>: the {fmt(len(DRAFTS))} drafts that were vetoed or failed, and who vetoed them</li>
+<li><a href="/data/citations.csv" download>citations.csv</a>: which resolution cites which</li>
+<li><a href="/data/eras.csv" download>eras.csv</a> and <a href="/data/countries.csv" download>countries.csv</a>: the era and country figures shown on the site</li>
+</ul>
+<h2>Open source</h2>
+<p>The code that builds this site is public on <a href="https://github.com/funkyfreedom/unsc">GitHub</a>. Anyone can download the same sources, rebuild every page and run the check script that recounts each figure. If you find a mistake, <a href="https://github.com/funkyfreedom/unsc/issues">open an issue</a> or write to daniel.desposito@gmail.com.</p>
 <h2>Reuse it</h2>
-<p>Everything we made here (the analysis, charts, text, data tables and code) is free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>. Just credit us: <i>Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026</i>. The underlying sources keep their own open licences; please credit them too.</p>
-<p>Want the data files or the code, or spotted a mistake? Write to daniel.desposito@gmail.com.</p>'''
+<p>The analysis, charts, text and data tables are free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>, and the code under the <a href="https://github.com/funkyfreedom/unsc/blob/main/LICENSE">MIT licence</a>. Just quote us: <i>Security Council Record (securitycouncilrecord.org), Daniel D'Esposito, 2026</i>. The underlying sources keep their own open licences; please credit them too.</p>'''
     write('/about/', page('/about/', 'About Security Council Record: who made it, why and how', 'Who made Security Council Record, the questions behind it, how it was built with Claude, its sources and how to reuse it.', about))
     open(os.path.join(DIST, '404.html'), 'w').write(page('/404', 'Page not found', 'Page not found.', '<h1>Page not found</h1><p>Try the <a href="/search/">search</a> or the <a href="/resolutions/">list of resolutions</a>.</p>', index=False))
 
@@ -607,5 +616,5 @@ sm = ''.join(f'<url><loc>{SITE}{p}</loc></url>' for p in pages)
 open(os.path.join(DIST, 'sitemap.xml'), 'w').write(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
 open(os.path.join(DIST, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n')
 open(os.path.join(DIST, '_headers'), 'w').write('/assets/*\n  Cache-Control: public, max-age=604800\n/pagefind/*\n  Cache-Control: public, max-age=86400\n')
-json.dump(dict(eras=ES and [{k: v for k, v in x.items() if k != 'top'} for x in ES], years=Y, agree=AGREE, veto_total=VETO_TOTAL, agg_targets=AGG_TARGETS, breach=[r['n'] for r in BREACH]), open(os.path.join(HERE, 'build', 'stats.json'), 'w'), default=str, indent=1)
+json.dump(dict(opened=OPENED, era_labels=ERA_LABELS, eras=ES and [{k: v for k, v in x.items() if k != 'top'} for x in ES], years=Y, agree=AGREE, veto_total=VETO_TOTAL, agg_targets=AGG_TARGETS, breach=[r['n'] for r in BREACH]), open(os.path.join(BUILD, 'stats.json'), 'w'), default=str, indent=1)
 print(len(pages), 'pages')

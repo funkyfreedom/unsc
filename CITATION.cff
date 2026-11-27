@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this data or analysis, please cite it as below."
+title: "Security Council Record: 80 years of the UN Security Council"
+abstract: "Patterns in themes, voting and language in every UN Security Council resolution, vote and veto since 1946, counted from the documents."
+type: dataset
+authors:
+  - family-names: "D'Esposito"
+    given-names: "Daniel"
+url: "https://securitycouncilrecord.org"
+repository-code: "https://github.com/funkyfreedom/unsc"
+license: CC-BY-4.0
+date-released: "2026-11-27"
+keywords:
+  - United Nations
+  - Security Council
+  - resolutions
+  - voting
+  - veto
+  - international law
+references:
+  - type: dataset
+    title: "Corpus of Resolutions: UN Security Council (CR-UNSC)"
+    authors:
+      - family-names: Fobbe
+        given-names: Seán
+      - family-names: Gasbarri
+        given-names: Lorenzo
+      - family-names: Ridi
+        given-names: Niccolò
+    version: "2026-08-19"
+    doi: "10.5281/zenodo.7319780"
+    license: CC0-1.0
+  - type: dataset
+    title: "UNSC votes since 1946 database"
+    authors:
+      - family-names: Martin
+        given-names: Benoît
+      - name: "Sciences Po Atelier de cartographie"
+      - name: "GRAM (Groupe de recherche sur l'action multilatérale)"
+    url: "https://github.com/AtelierCartographie/bd-unsc"
+    license: CC-BY-4.0
+  - type: dataset
+    title: "Machine-readable Security Council resolutions (AKN4UN)"
+    authors:
+      - name: "United Nations"
+    url: "https://github.com/UNxml/SCresolutions"
