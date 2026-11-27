@@ -3,7 +3,7 @@
 An independent record of every UN Security Council resolution, vote and veto since 1946: securitycouncilrecord.org
 
 - `dist/` is the finished static site (HTML, assets and the Pagefind search index). Cloudflare Pages serves it as is.
-- `src/` holds the generator: `prep.py` merges the sources into one dataset, `build.py` and `lib.py` write the pages and charts, `search.js` and `lab.js` run Super search and the Language lab, `share.py` draws the share image. After building, run `npx pagefind --site dist`.
+- `src/` holds the generator: `prep.py` merges the sources into one dataset, `build.py` and `lib.py` write the pages and charts, `search.js` and `lab.js` run Super search and the Language lab, `share.py` draws the share image and `icons.py` the favicons and logo. Order: `prep.py`, `build.py`, `npx pagefind --site dist`, `share.py`, `icons.py`.
 
 ## Cloudflare Pages settings
 

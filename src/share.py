@@ -1,21 +1,41 @@
 from PIL import Image, ImageDraw, ImageFont
 import json
 W,H=1200,630
-im=Image.new('RGB',(W,H),'white'); d=ImageDraw.Draw(im)
+S=2
+im=Image.new('RGB',(W*S,H*S),'white'); d=ImageDraw.Draw(im)
 F='/usr/share/fonts/opentype/inter/'
-bold=ImageFont.truetype(F+'Inter-Bold.otf',62); semi=ImageFont.truetype(F+'Inter-SemiBold.otf',34); reg=ImageFont.truetype(F+'Inter-Regular.otf',28)
-blue=(44,120,212); grey=(196,195,182); text=(29,29,27); muted=(107,106,100)
-d.rounded_rectangle((80,80,140,140),10,fill=blue)
-for x,y in ((93,112),(106,101),(119,92)): d.rectangle((x,y,x+8,128),fill='white')
-d.text((160,88),'Security Council Record',font=semi,fill=text)
-d.text((80,200),'Every UN Security Council',font=bold,fill=text)
-d.text((80,272),'resolution, vote and veto',font=bold,fill=text)
-d.text((80,344),'since 1946',font=bold,fill=text)
+f=lambda n,s: ImageFont.truetype(F+n,s*S)
+blue=(44,120,212); bink=(29,95,174); grey=(196,195,182); ink=(29,29,27); muted=(100,99,93); light=(217,216,210)
+# ink header
+d.rectangle((0,0,W*S,88*S),fill=ink)
+x0,y0=60,22
+d.rounded_rectangle((x0*S,y0*S,(x0+44)*S,(y0+44)*S),radius=8*S,fill=blue)
+u=44/28
+for x,y in ((6,15),(12.2,10),(18.4,6)): d.rectangle(((x0+x*u)*S,(y0+y*u)*S,(x0+(x+3.6)*u)*S,(y0+22*u)*S),fill='white')
+d.text((118*S,29*S),'Security Council Record',font=f('Inter-ExtraBold.otf',30),fill='white')
+d.text((W*S-60*S,34*S),'securitycouncilrecord.org',font=f('Inter-Medium.otf',22),fill=light,anchor='ra')
+# headline
+d.text((60*S,122*S),'80 years of the UN Security Council',font=f('Inter-ExtraBold.otf',58),fill=ink)
+d.text((60*S,198*S),'Every resolution, vote and veto since 1946',font=f('Inter-Regular.otf',28),fill=muted)
+# chart
 Y=json.load(open('dist/assets/years.json'))
 ys=[int(k) for k in Y if int(k)<=2025]; mx=max(Y[str(y)] for y in ys)
-x0,base,bw=80,580,(1040)/len(ys)
+left,right,base,top=60,W-60,560,262
+bw=(right-left)/len(ys)
+for v in (25,50,75):
+    yy=base-(v/mx)*(base-top); d.line((left*S,yy*S,right*S,yy*S),fill=(233,232,227),width=S)
 for i,y in enumerate(ys):
-    h=Y[str(y)]/mx*95; col=blue if y in (1993,2025) else grey
-    d.rectangle((x0+i*bw+1,base-h,x0+(i+1)*bw-2,base),fill=col)
-d.text((80,420),'An independent record, counted from the documents',font=reg,fill=muted)
-im.save('dist/assets/share.png',optimize=True)
+    h=Y[str(y)]/mx*(base-top); c=blue if y in (1993,2025) else grey
+    d.rectangle(((left+i*bw+1.2)*S,(base-h)*S,(left+(i+1)*bw-1.2)*S,base*S),fill=c)
+def lab(y,txt,anchor):
+    i=ys.index(y); x=left+i*bw+bw/2; h=Y[str(y)]/mx*(base-top)
+    d.text(((x+(10 if anchor=='la' else -10))*S,(base-h+2)*S),txt,font=f('Inter-Bold.otf',22),fill=bink,anchor=anchor)
+i=ys.index(1993); x=left+i*bw
+d.text(((x-10)*S,(top+2)*S),'93 resolutions in 1993',font=f('Inter-Bold.otf',22),fill=bink,anchor='ra')
+rec=max(Y[str(y)] for y in ys[-6:]); yy=base-rec/mx*(base-top)
+d.text((right*S,(yy-34)*S),'44 in 2025',font=f('Inter-Bold.otf',22),fill=bink,anchor='ra')
+d.line((left*S,base*S,right*S,base*S),fill=(185,184,174),width=2*S)
+for y in (1950,1970,1990,2010):
+    i=ys.index(y); d.text(((left+i*bw+bw/2)*S,(base+12)*S),str(y),font=f('Inter-Medium.otf',18),fill=muted,anchor='ma')
+d.text((60*S,600*S),'Resolutions adopted per year, 1946 to 2025',font=f('Inter-Medium.otf',18),fill=muted)
+im.resize((W,H),Image.LANCZOS).save('dist/assets/share.png',optimize=True)

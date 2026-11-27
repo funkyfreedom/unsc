@@ -297,7 +297,11 @@ def home():
 <h2>At a glance</h2>{fig(timeline(), CAP_VOTES)}<p>{glance}</p>
 <h2>The eight eras</h2><p>The periods follow political breaks, not decades. Each break shows in the data: a jump in output, a change in unanimity, a new veto caster or new words.</p>{era_table()}
 <h2>Explore</h2><div class="cards"><a class="card" href="/language/"><b>Language lab</b><span>Track any word or phrase through 80 years of resolutions.</span></a><a class="card" href="/votes/"><b>Members and votes</b><span>Every member's record: abstentions, no votes and vetoes.</span></a><a class="card" href="/themes/new-agendas/"><b>New agendas</b><span>When civilians, women, terrorism, climate and others arrived.</span></a><a class="card" href="/about/security-council/"><b>What is the Security Council?</b><span>Members, veto power, how it decides and what Chapter VII allows.</span></a><a class="card" href="/resolutions/"><b>All resolutions</b><span>Full text, vote and citations for each one.</span></a></div>'''
-    ld = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': NAME, 'url': SITE + '/', 'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}}
+    ld = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'WebSite', '@id': SITE + '/#website', 'name': NAME, 'url': SITE + '/', 'publisher': {'@id': SITE + '/#org'},
+         'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}},
+        {'@type': 'Organization', '@id': SITE + '/#org', 'name': NAME, 'url': SITE + '/', 'logo': {'@type': 'ImageObject', 'url': SITE + '/assets/logo.png', 'width': 512, 'height': 512},
+         'founder': {'@type': 'Person', 'name': "Daniel D'Esposito", 'sameAs': 'https://www.linkedin.com/in/ddesposito'}}]}
     write('/', page('/', 'Every UN Security Council resolution, vote and veto since 1946', f'An independent record of all {fmt(len(R))} UN Security Council resolutions, votes and vetoes since 1946, with eras, themes, full text and search.', body, jsonld=ld))
 
 # ------------- ERAS -------------
