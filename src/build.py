@@ -287,7 +287,7 @@ def home():
     maxn = max(Y[y]['n'] for y in FULL_YEARS); bw = 560 / len(FULL_YEARS)
     mini = ''.join(f'<rect x="{i*bw+0.6:.1f}" y="{240-Y[y]["n"]/maxn*240:.1f}" width="{bw-1.2:.1f}" height="{Y[y]["n"]/maxn*240:.1f}" fill="{BLUE if y in (peak_y, LAST_FULL) else GREY}"><title>{y}: {Y[y]["n"]} resolutions</title></rect>' for i, y in enumerate(FULL_YEARS))
     rows = ''.join(f'<a href="/themes/{sl}/"><span class="no{" o" if i == 1 else ""}">{i+1:02d}</span><span><b>{e(t)}</b><span>{e(x)}</span></span></a>' for i, (sl, t, x) in enumerate(THEME_PAGES))
-    body = f'''<section class="hero"><div><p class="kicker">An independent record</p><h1>80 years of the Security Council</h1>
+    body = f'''<section class="hero"><div><p class="kicker">An independent record</p><h1>80 years of the UN Security Council</h1>
 <p class="lede">Every UN Security Council resolution, vote and veto since 1946, and what they show about war, power and the Council itself. Every figure on this site is counted from the documents.</p>
 <form class="search-hero" action="/search/" role="search"><label for="hq" class="sr">Search all resolutions</label><input id="hq" name="q" type="search" placeholder="Search all {fmt(len(R))} resolutions: Rwanda, sanctions, 242"><button>Search</button></form>
 <div class="chips"><a class="chip" href="/resolutions/242/">Resolution 242</a><a class="chip" href="/resolutions/1325/">1325 Women and peace</a><a class="chip" href="/resolutions/678/">678 Kuwait</a><a class="chip" href="/themes/the-veto/">Every veto</a></div></div>
