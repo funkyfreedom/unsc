@@ -39,7 +39,7 @@ nav.main a[aria-current]{box-shadow:inset 0 -2px 0 var(--blue)}
 main{max-width:var(--max);margin:0 auto;padding:28px 20px 60px}
 .blocks{margin-right:-12px}
 main.wide{max-width:var(--wide)}
-h1{font-size:44px;line-height:1.08;letter-spacing:-.03em;margin:18px 0 14px;font-weight:800}
+.copylink{font:inherit;font-size:14px;font-weight:600;color:var(--blue-ink);background:#fff;border:1px solid var(--rule);border-radius:6px;padding:6px 12px;min-height:36px;cursor:pointer;margin:0 0 12px}.copylink:hover{border-color:var(--blue-ink)}.anchor{margin-left:.4em;font-weight:500;color:var(--muted);border:0;padding:0 .15em}.anchor:hover,.anchor:focus{color:var(--blue-ink)}.text p>.anchor{font-size:.85em}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1d1d1b;color:#fff;padding:10px 16px;border-radius:8px;font-size:15px;opacity:0;pointer-events:none;transition:.2s}.toast.on{opacity:1;transform:translate(-50%,0)}:target{scroll-margin-top:16px}.text p:target{background:#fff6d6}h1{font-size:44px;line-height:1.08;letter-spacing:-.03em;margin:18px 0 14px;font-weight:800}
 h2{font-size:30px;line-height:1.15;letter-spacing:-.02em;margin:52px 0 14px;font-weight:800}
 h3{font-size:19px;margin:30px 0 8px;font-weight:700}
 p{margin:0 0 14px}
@@ -212,6 +212,7 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <p>Built on the documentation of the Security Council, the <a href="https://doi.org/10.5281/zenodo.7319780">CR-UNSC corpus</a> (Fobbe, Gasbarri and Ridi, CC0), the <a href="https://github.com/UNxml/SCresolutions">UN machine-readable resolutions</a> and the <a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a> (Sciences Po Atelier de cartographie and GRAM, CC BY 4.0). <a href="/about/">Method and sources</a>.</p>
 <p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. <a href="/about/#download-the-data">Data</a> and <a href="https://github.com/funkyfreedom/unsc">code</a> are open. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
 </div></footer>
+<script src="/assets/links.js" defer></script>
 </body>
 </html>'''
 

@@ -20,6 +20,20 @@ def write(path, html_):
         k[0] += 1
         return f'aria-label="Table {k[0]}"'
     html_ = re.sub(r'aria-label="Table"', lab, html_)
+    # give every section heading in <main> an id, so any section can be linked to
+    used = set(re.findall(r' id="([^"]+)"', html_))
+    def hid(m):
+        if ' id=' in m.group(2):
+            return m.group(0)
+        s = re.sub(r'[^a-z0-9]+', '-', re.sub(r'<[^>]+>|&[a-z#0-9]+;', '', m.group(3)).lower().replace("'", '')).strip('-')[:60].strip('-') or 'section'
+        t, i = s, 2
+        while t in used:
+            t, i = f'{s}-{i}', i + 1
+        used.add(t)
+        return f'<{m.group(1)} id="{t}"{m.group(2)}>{m.group(3)}</{m.group(1)}>'
+    a, z = html_.find('<main'), html_.find('</main>')
+    if a >= 0 and z > a:
+        html_ = html_[:a] + re.sub(r'<(h[23])((?:\s[^>]*)?)>(.*?)</\1>', hid, html_[a:z], flags=re.S) + html_[z:]
     fp = os.path.join(DIST, path.lstrip('/'), 'index.html') if path.endswith('/') else os.path.join(DIST, path.lstrip('/'))
     os.makedirs(os.path.dirname(fp), exist_ok=True)
     open(fp, 'w').write(html_)
@@ -113,7 +127,7 @@ for f in ('inter-latin-wght-normal.woff2', 'inter-latin-ext-wght-normal.woff2'):
     shutil.copy(os.path.join(FONTS_WOFF, f), os.path.join(DIST, 'assets', 'fonts', f))
 open(os.path.join(DIST, 'favicon.svg'), 'w').write(LOGO.replace('aria-hidden="true"', 'xmlns="http://www.w3.org/2000/svg"'))
 json.dump({str(y): Y[y]['n'] for y in years}, open(os.path.join(DIST, 'assets', 'years.json'), 'w'))
-for js in ('search.js', 'lab.js'):
+for js in ('search.js', 'lab.js', 'links.js'):
     shutil.copy(os.path.join(SRC, js), os.path.join(DIST, 'assets', js))
 
 # ------------- shared fragments -------------
@@ -507,7 +521,7 @@ def resolution_pages():
         cites = ', '.join(rlink(x) for x in r['cites'] if x in BYN)
         cited = ', '.join(rlink(x) for x in r['cited_by'][:60] if x in BYN)
         more = f' and {len(r["cited_by"]) - 60} more' if len(r['cited_by']) > 60 else ''
-        text = ''.join(f'<p>{e(p)}</p>' for p in paragraphs(n, r['text']))
+        text = ''.join(f'<p id="p{i}">{e(p)}</p>' for i, p in enumerate(paragraphs(n, r['text']), 1))
         ga = GA_NOTE.get(n, '')
         prev_n, next_n = (n - 1 if n > 1 else None), (n + 1 if n < len(R) else None)
         vote = f'<div class="vote"><span>Yes <b>{e(r["yes"])}</b></span><span>No <b>{e(r["no"])}</b></span><span>Abstained <b>{e(r["abst"])}</b></span>' + (f'<span>Did not vote <b>{e(r["nonvote"])}</b></span>' if r['nonvote'] not in ('', '0', '00', '000') else '') + '</div>'
