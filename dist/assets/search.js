@@ -60,11 +60,13 @@ async function run() {
   syncUrl();
   const f = filterObj();
   if (!q && !Object.keys(f).length) {
-    $('count').textContent = 'Type a word, a phrase in quotes, or pick a filter.';
+    $('count').textContent = 'Type a word or a phrase in quotes, or pick a filter. Until then, here are the latest resolutions.';
+    $('latest').hidden = false;
     $('results').innerHTML = ''; $('more').hidden = true;
     renderFacets(allFilters);
     return;
   }
+  $('latest').hidden = true;
   const search = await pagefind.search(q || null, { filters: f });
   results = search.results; shown = 0;
   $('results').innerHTML = '';

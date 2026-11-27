@@ -122,3 +122,7 @@ print(f'PASSED {len(ok)}')
 for x in ok: print('  ok  ', x)
 print(f'FAILED {len(bad)}')
 for x in bad: print('  FAIL', x)
+
+# 6. every resolution page carries its own resolution, and search indexes all of them
+bad_pages = [n for n in range(1, N + 1) if f'Resolution {n} (' not in open(f'{ROOT}/scr/dist/resolutions/{n}/index.html').read()[:3000]]
+print('Resolution pages with the wrong content:', bad_pages[:10] or 'none')

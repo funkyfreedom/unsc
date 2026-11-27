@@ -285,6 +285,48 @@ def agendas_body():
             + f'<div class="tw" tabindex="0" role="region" aria-label="Table"><table><thead><tr><th class="num">Year</th><th>Resolution</th><th>What entered the vocabulary</th><th class="num">Resolutions using it</th></tr></thead><tbody>{rows}</tbody></table></div>'
             + '<p>The Council started as a body that refereed wars between states. It is now a body that legislates on how wars are fought inside states, and on threats that are not wars at all.</p>')
 
+# ------------- TOOLS (home) -------------
+def tools_html():
+    # 1. search preview: real resolutions about Rwanda
+    rwall = [r for r in R if 'rwanda' in r['text'].lower() and 1994 <= r['year'] <= 2000 and r['flags']['ch7']]
+    rw = [r for r in rwall if 'rwanda' in r['topic'].lower()][:3]
+    res = ''.join(f'<div class="pr"><span class="pt">UN Security Council Resolution {r["n"]} ({r["year"]})</span><span class="pd">{e(r["topic"][:90])}</span></div>' for r in rw)
+    nrw = len(rwall)
+    search_ill = f'''<div class="mock" role="img" aria-label="Preview of Super search: results for Rwanda with filters"><div class="mq"><span>Rwanda</span><span class="mb">Search</span></div><div class="mg"><div class="mf"><span class="fl">Era</span><span class="fc on">1994-2000</span><span class="fc">2001-10</span><span class="fl">Charter wording</span><span class="fc on">Chapter VII</span><span class="fc">Threat to the peace</span><span class="fl">Theme</span><span class="fc">Refugees</span><span class="fc">Justice and impunity</span></div><div class="mr"><span class="mc">{nrw} results</span>{res}</div></div></div>'''
+    # 2. language lab preview: share of resolutions per year using "aggression"
+    ys = FULL_YEARS
+    cnt = {y: sum(1 for r in R if r['year'] == y and re.search(r'\baggression\b', r['text'].lower())) for y in ys}
+    sh = {y: 100 * cnt[y] / Y[y]['n'] for y in ys}
+    mx = max(sh.values()); pk = max(ys, key=lambda y: sh[y]); bw = 560 / len(ys)
+    bars = ''.join(f'<rect x="{i*bw+0.6:.1f}" y="{200-sh[y]/mx*180:.1f}" width="{bw-1.2:.1f}" height="{sh[y]/mx*180:.1f}" fill="{BLUE if y == pk else GREY}"><title>{y}: {cnt[y]} of {Y[y]["n"]} resolutions</title></rect>' for i, y in enumerate(ys))
+    lab_ill = f'''<div class="mock"><div class="mq"><span>aggression</span><span class="mb">Show</span></div><svg viewBox="0 0 560 230" role="img" aria-label="Share of resolutions using the word aggression each year, peaking at {round(sh[pk])}% in {pk}">{bars}<text x="{list(ys).index(pk)*bw+bw/2:.1f}" y="{200-180-6:.1f}" font-size="13" font-weight="700" fill="{TEXT}" text-anchor="middle">{round(sh[pk])}% in {pk}</text><text x="0" y="222" font-size="12" fill="{MUTED}">1946</text><text x="560" y="222" font-size="12" fill="{MUTED}" text-anchor="end">{LAST_FULL}</text></svg></div>'''
+    # 3. members and votes preview: agreement heat map, pairs x eras
+    cells = ''
+    cw, ch, lx = 52, 34, 150
+    for pi, (lab, vals) in enumerate(AGREE.items()):
+        cells += f'<text x="{lx-10}" y="{30+pi*ch+22}" font-size="13" fill="{TEXT}" text-anchor="end">{e(lab)}</text>'
+        for i, v in enumerate(vals):
+            if v is None:
+                cells += f'<rect x="{lx+i*cw}" y="{30+pi*ch}" width="{cw-3}" height="{ch-3}" fill="#f6f6f3"/>'
+                continue
+            cells += f'<rect x="{lx+i*cw}" y="{30+pi*ch}" width="{cw-3}" height="{ch-3}" fill="{BLUE}" fill-opacity="{0.08+0.92*v/100:.2f}"><title>{e(lab)}, {ERA_LABELS[i]}: {v}%</title></rect><text x="{lx+i*cw+(cw-3)/2}" y="{30+pi*ch+21}" font-size="12" font-weight="600" fill="{"#fff" if v >= 55 else TEXT}" text-anchor="middle">{v}</text>'
+    for i, l in enumerate(ERA_LABELS):
+        cells += f'<text x="{lx+i*cw+(cw-3)/2}" y="20" font-size="11" fill="{MUTED}" text-anchor="middle">{l[:4]}</text>'
+    heat = f'<div class="mock"><svg viewBox="0 0 570 180" role="img" aria-label="Heat map: how often pairs of permanent members voted alike on contested votes, by era">{cells}<text x="{lx}" y="176" font-size="11" fill="{MUTED}">% of contested votes cast alike, by era (start year shown)</text></svg></div>'
+    # 4. resolution page preview
+    r = BYN[242]
+    rp = f'''<div class="mock rp" role="img" aria-label="Preview of a resolution page: resolution 242 (1967)"><span class="rk">S/RES/242 (1967) · 1967-11-22</span><span class="rh">UN Security Council Resolution 242 (1967)</span><span class="rl">{e(r["topic"])}</span><span class="rb"><span class="badge grey">Unanimous</span> Yes 15 · No 0 · Abstained 0</span><span class="rc">Cited by {len(r["cited_by"])} later resolutions</span><span class="rt">Emphasizing the inadmissibility of the acquisition of territory by war and the need to work for a just and lasting peace in which every State in the area can live in security…</span></div>'''
+    rows = [
+        ('/search/', 'Super search', 'Search every word of every resolution', f'Full text of all {fmt(len(R))} resolutions, with filters for era, region, theme, Charter wording (Chapter VII, threat to the peace, aggression), vote and country. Put a phrase in quotes for an exact match.', search_ill),
+        ('/language/', 'Language lab', 'See how the Council\'s words changed', 'Type any word or phrase and see the share of resolutions using it, year by year since 1946. Try aggression, sovereignty, climate change or sexual violence, and watch new vocabulary arrive and old vocabulary fade.', lab_ill),
+        ('/votes/', 'Members and votes', 'Find patterns in who votes with whom', f'The record of all {len(COUNTRIES)} countries that have sat on the Council: abstentions, no votes and vetoes, resolution by resolution. Compare how often members vote alike, and see where they diverge: the US and Russia agreed on {AGREE["US and Russia"][3]}% of contested votes around 1990, {AGREE["US and Russia"][7]}% today.', heat),
+        ('/resolutions/', 'All resolutions', 'Read any resolution in full', 'Every resolution from 1946 has its own page: the full text, how each member voted, its Charter wording, its themes, the resolutions it cites and the later ones that cite it, with a link to the official document.', rp),
+    ]
+    out = '<h2>Tools to analyse the resolutions</h2><div class="tools">'
+    for i, (href, name, head, txt, ill) in enumerate(rows):
+        out += f'<div class="tool{" rev" if i % 2 else ""}"><div class="ttext"><span class="tag">{name}</span><h3>{head}</h3><p>{e(txt)}</p><a class="btn" href="{href}">Open {name.lower() if name != "Super search" else "Super search"}</a></div><div class="till">{ill}</div></div>'
+    return out + '</div>'
+
 # ------------- HOME -------------
 def home():
     stats = f'''<div class="stats"><div><b>{fmt(len(R))}</b><span>resolutions, 1946 to 2026</span></div><div><b>{TOTAL_VETOED}</b><span>vetoed drafts</span></div><div><b>{len(COUNTRIES)}</b><span>countries that have sat on the Council</span></div><div><b>{fmt(len(allvotes))}</b><span>recorded votes</span></div></div>'''
@@ -296,14 +338,15 @@ def home():
     blocks = '<h2>What stands out</h2><div class="blocks">' + ''.join(
         f'<a class="block" href="/themes/{sl}/"><div class="btext"><span class="no{" o" if i == 1 else ""}">{i+1:02d}</span><b>{e(t)}</b><p>{e(x)}</p><span class="more">Read the full analysis</span></div><div class="bchart" role="img" aria-label="Chart: {e(t)}">{bare(charts[i])}</div></a>'
         for i, (sl, t, x) in enumerate(THEME_PAGES)) + '</div>'
-    basics = f'''<h2>New to the Security Council?</h2><p class="muted">The basics in five boxes. <a href="/about/security-council/">Read the full explainer</a>.</p>
+    tools = tools_html()
+    basics = f'''<section class="fullband"><div class="in"><p class="kicker">Start here</p><h2 style="margin-top:4px">New to the Security Council?</h2><p class="muted">The basics in five boxes. <a href="/about/security-council/">Read the full explainer</a>.</p>
 <div class="basics">
 <a class="basic" href="/about/security-council/"><span class="tag">What it is</span><b>The UN's body for peace and security</b><span>All UN members agree to carry out its decisions (Article 25 of the Charter).</span></a>
 <a class="basic" href="/votes/"><span class="tag">Who sits on it</span><b>15 members, 5 permanent</b><span>China, France, Russia, the United Kingdom and the United States, plus ten members elected for two years.</span></a>
 <a class="basic" href="/themes/the-veto/"><span class="tag">How it decides</span><b>Nine votes and no veto</b><span>A single no from a permanent member blocks a draft. {TOTAL_VETOED} drafts have been vetoed since 1946.</span></a>
 <a class="basic" href="/themes/from-advising-to-ordering/"><span class="tag">What it can do</span><b>Recommend, or order</b><span>Chapter VI to settle disputes; Chapter VII for sanctions, peace operations and the use of force.</span></a>
 <a class="basic" href="/resolutions/"><span class="tag">What a resolution is</span><b>{fmt(len(R))} decisions, numbered since 1946</b><span>Browse every resolution with its full text, vote and citations.</span></a>
-</div>'''
+</div></div></section>'''
     body = f'''<section class="hero"><div><p class="kicker">An independent record</p><h1>80 years of the UN Security Council</h1>
 <p class="lede">Every UN Security Council resolution, vote and veto since 1946, and what they show about war, power and the Council itself. Every figure on this site is counted from the documents.</p>
 <form class="search-hero" action="/search/" role="search"><label for="hq" class="sr">Search all resolutions</label><input id="hq" name="q" type="search" placeholder="Search all {fmt(len(R))} resolutions: Rwanda, sanctions, 242"><button>Search</button></form>
@@ -314,7 +357,7 @@ def home():
 <h2>At a glance</h2>{fig(timeline(), CAP_VOTES)}<p>{glance}</p>
 <h2>The eight eras</h2><p>The periods follow political breaks, not decades. Each break shows in the data: a jump in output, a change in unanimity, a new veto caster or new words.</p>{era_table()}
 {basics}
-<h2>Explore</h2><div class="cards"><a class="card" href="/language/"><b>Language lab</b><span>Track any word or phrase through 80 years of resolutions.</span></a><a class="card" href="/votes/"><b>Members and votes</b><span>Every member's record: abstentions, no votes and vetoes.</span></a><a class="card" href="/themes/new-agendas/"><b>New agendas</b><span>When civilians, women, terrorism, climate and others arrived.</span></a></div>'''
+{tools}'''
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'WebSite', '@id': SITE + '/#website', 'name': NAME, 'url': SITE + '/', 'publisher': {'@id': SITE + '/#org'},
          'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}},
@@ -478,7 +521,7 @@ def resolution_pages():
 <p class="meta"><a href="{e(r["url_en"])}">Official document (PDF)</a>{" &middot; Draft " + e(r["draft"]) if r["draft"] else ""}{" &middot; Meeting record " + e(r["meeting"]) if r["meeting"] else ""}</p>
 {"<h2>Cites</h2><p>" + cites + "</p>" if cites else ""}{"<h2>Cited by later resolutions</h2><p>" + cited + more + "</p>" if cited else ""}</div>
 <div class="text">{text}</div>
-<p class="meta" data-pagefind-ignore>{"<a href=/resolutions/%d/>Previous: %d</a>" % (prev_n, prev_n) if prev_n else ""}{" &middot; " if prev_n and next_n else ""}{"<a href=/resolutions/%d/>Next: %d</a>" % (next_n, next_n) if next_n else ""} &middot; <a href="/resolutions/{r["year"]}/">All resolutions of {r["year"]}</a></p>'''
+<p class="meta" data-pagefind-ignore>{"<a href=/resolutions/%d/>Previous: %d</a>" % (prev_n, prev_n) if prev_n else ""}{" &middot; " if prev_n and next_n else ""}{"<a href=/resolutions/%d/>Next: %d</a>" % (next_n, next_n) if next_n else ""} &middot; <a href="/resolutions/year/{r["year"]}/">All resolutions of {r["year"]}</a></p>'''
         filters = {'type': 'Resolution', 'era': ERA_LABELS[r['era']] + ' ' + ERAS[r['era']]['short'], 'year': str(r['year']), 'region': r['region'],
                    'vote': 'Unanimous' if r['unanimous'] else ('Not unanimous' if r['unanimous'] is False else 'Unknown'),
                    'theme': [THEMES[t] for t in r['themes']]}
@@ -493,24 +536,26 @@ def resolution_pages():
         desc = f'Full text and vote of UN Security Council resolution {n} ({r["year"]}), adopted {r["date"]}: {r["topic"]}.'
         ld = {'@context': 'https://schema.org', '@type': 'Legislation', 'name': f'Security Council resolution {n} ({r["year"]})', 'legislationIdentifier': r['sym'], 'datePublished': r['date'],
               'about': r['topic'], 'legislationPassedBy': {'@type': 'Organization', 'name': 'United Nations Security Council'}, 'url': SITE + f'/resolutions/{n}/', 'sameAs': r['url_en']}
-        write(f'/resolutions/{n}/', page(f'/resolutions/{n}/', title[:110], desc[:300], body, jsonld=ld, pagefind=True, filters=filters, crumbs=[('/', 'Home'), ('/resolutions/', 'Resolutions'), (f'/resolutions/{r["year"]}/', str(r['year'])), (None, str(n))]))
+        write(f'/resolutions/{n}/', page(f'/resolutions/{n}/', title[:110], desc[:300], body, jsonld=ld, pagefind=True, filters=filters, crumbs=[('/', 'Home'), ('/resolutions/', 'Resolutions'), (f'/resolutions/year/{r["year"]}/', str(r['year'])), (None, str(n))]))
     # year pages and index
     yl = ''
     for y in years:
         rs = [r for r in R if r['year'] == y]
         lst = ''.join(f'<li>{rlink(r["n"])} {e(r["topic"])}</li>' for r in rs)
-        write(f'/resolutions/{y}/', page(f'/resolutions/{y}/', f'UN Security Council resolutions of {y}', f'All {len(rs)} UN Security Council resolutions adopted in {y}, with full text and votes.',
+        write(f'/resolutions/year/{y}/', page(f'/resolutions/year/{y}/', f'UN Security Council resolutions of {y}', f'All {len(rs)} UN Security Council resolutions adopted in {y}, with full text and votes.',
                                          f'<h1>Resolutions of {y}</h1><p class="lede">{len(rs)} resolutions{f", {Y[y][chr(117)]}% unanimous" if Y[y]["u"] is not None else ""}. {era_link(rs[0]["era"])}.</p><ul class="plain">{lst}</ul>', crumbs=[('/', 'Home'), ('/resolutions/', 'Resolutions'), (None, str(y))]))
-        yl += f'<a href="/resolutions/{y}/">{y}</a> <span class="meta">{len(rs)}</span> '
+        yl += f'<a href="/resolutions/year/{y}/">{y}</a> <span class="meta">{len(rs)}</span> '
     write('/resolutions/', page('/resolutions/', 'All UN Security Council resolutions since 1946', f'Browse all {fmt(len(R))} UN Security Council resolutions by year, with full text, votes and citations.',
                                 f'<h1>All resolutions</h1><p class="lede">{fmt(len(R))} resolutions, from resolution 1 on 25 January 1946 to resolution {len(R)} in {years[-1]}. Pick a year, or <a href="/search/">search the full text</a>.</p><div class="yearnav">{yl}</div>'))
 
 # ------------- SEARCH, LAB, ABOUT -------------
 def misc_pages():
+    global LATEST
+    LATEST = ''.join(f'<div class="r"><a href="/resolutions/{r["n"]}/">UN Security Council Resolution {r["n"]} ({r["year"]})</a> <span class="muted">{e(r["topic"])}</span><p>Adopted {r["date"]}{", unanimously" if r["unanimous"] else ""}.</p></div>' for r in sorted(R, key=lambda r: -r['n'])[:20])
     write('/search/', page('/search/', 'Search all Security Council resolutions', f'Full-text search with filters across all {fmt(len(R))} UN Security Council resolutions since 1946.',
                            f'''<h1>Super search</h1><p class="lede">Search the full text of every resolution. Narrow by era, region, theme, Charter wording and vote.</p>
 <form class="search-hero" id="sform" role="search"><label for="q" class="sr">Search</label><input id="q" class="q" type="search" placeholder="Words or a phrase in quotes" autocomplete="off"><button>Search</button></form>
-<div class="sgrid"><aside class="facets" id="facets" aria-label="Filters"></aside><div><div class="count" id="count" aria-live="polite"></div><div class="results" id="results"></div><p><button class="btn light" id="more" hidden>More results</button></p></div></div>
+<div class="sgrid"><aside class="facets" id="facets" aria-label="Filters"></aside><div><div class="count" id="count" aria-live="polite"></div><div id="latest"><h2 style="margin-top:0;font-size:22px">Latest resolutions</h2><div class="results">{LATEST}</div><p><a href="/resolutions/">All resolutions by year</a></p></div><div class="results" id="results"></div><p><button class="btn light" id="more" hidden>More results</button></p></div></div>
 <script src="/assets/search.js" type="module"></script>''', wide=True, index=True))
     presets = ['aggression', 'breach of the peace', 'threat to the peace', 'Chapter VII', 'sovereignty', 'self-determination', 'terrorism', 'climate change', 'sexual violence', 'apartheid', 'humanitarian', 'all necessary means']
     chips = ''.join(f'<button type="button" class="chip" data-q="{e(p)}">{e(p)}</button>' for p in presets)
