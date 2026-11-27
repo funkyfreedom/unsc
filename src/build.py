@@ -123,7 +123,7 @@ def era_table():
     for i, er in enumerate(ERAS):
         s = ES[i]
         rows.append(f'<tr><td><a href="/eras/{er["slug"]}/"><b>{er["a"]} to {er["b"]}</b></a><br>{e(er["name"])}</td><td>{e(OPENED[i])}</td><td class="num">{s["per_year"]}</td><td class="num">{s["unan"]}%</td><td>{ERA_NOTES[i]}</td></tr>')
-    return f'<div class="tw bleed" tabindex="0" role="region" aria-label="Table of the eight eras"><table class="eras"><thead><tr><th>Era</th><th>Opened by</th><th class="num">Per year</th><th class="num">Unanimous</th><th>What the documents show</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+    return f'<div class="tw" tabindex="0" role="region" aria-label="Table of the eight eras"><table class="eras"><thead><tr><th>Era</th><th>Opened by</th><th class="num">Per year</th><th class="num">Unanimous</th><th>What the documents show</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
 
 OPENED = ['The UN starts work', '17 African states admitted in 1960; Council enlarged to 15 in 1965', 'End of the Portuguese empire, wars in Southern Africa and Lebanon',
           'Iran and Iraq ceasefire (598, 1987), end of the Cold War', 'Rwanda genocide, war in Bosnia', '9/11, the women and peace agenda (1325, 2000)',
@@ -191,6 +191,12 @@ def binding_chart():
            dict(name='"Acting under Chapter VII"', values=[s[i]['flags']['ch7'] for i in range(8)], color=GREY, width=2.2, dash='5 3'),
            dict(name='"All necessary means/measures"', values=[s[i]['flags']['all_necessary'] for i in range(8)], color=GREY)]
     return era_lines_chart(ERA_LABELS, ser, 'The Council moved from recommending to deciding', 'Share of resolutions using binding or enforcement wording, by era')
+
+def bare(svg):
+    m = re.match(r'<svg viewBox="0 0 (\d+) (\d+)"', svg)
+    w, h = int(m.group(1)), int(m.group(2))
+    svg = re.sub(r'(</title>)<text[^>]*>.*?</text><text[^>]*>.*?</text>', r'\1', svg, count=1)
+    return svg.replace(f'viewBox="0 0 {w} {h}"', f'viewBox="0 52 {w} {h-52}"', 1)
 
 def fig(svg, cap):
     return f'<figure tabindex="0" aria-label="Chart">{svg}<figcaption>{cap}</figcaption></figure>'
@@ -286,17 +292,29 @@ def home():
     glance = f'The Council adopted about {s[0]["per_year"]} resolutions a year in its first era and over 60 a year from 1994 to 2010. Output has fallen every year since 2021, to {Y[LAST_FULL]["n"]} in {LAST_FULL}, the lowest since {lowest_since}. The quiet years of the Cold War were divided years: unanimity often sat below half.'
     maxn = max(Y[y]['n'] for y in FULL_YEARS); bw = 560 / len(FULL_YEARS)
     mini = ''.join(f'<rect x="{i*bw+0.6:.1f}" y="{240-Y[y]["n"]/maxn*240:.1f}" width="{bw-1.2:.1f}" height="{Y[y]["n"]/maxn*240:.1f}" fill="{BLUE if y in (peak_y, LAST_FULL) else GREY}"><title>{y}: {Y[y]["n"]} resolutions</title></rect>' for i, y in enumerate(FULL_YEARS))
-    rows = ''.join(f'<a href="/themes/{sl}/"><span class="no{" o" if i == 1 else ""}">{i+1:02d}</span><span><b>{e(t)}</b><span>{e(x)}</span></span></a>' for i, (sl, t, x) in enumerate(THEME_PAGES))
+    charts = [binding_chart(), lang_chart(), veto_chart(), agree_chart(), inside_chart(), region_chart()]
+    blocks = '<h2>What stands out</h2><div class="blocks">' + ''.join(
+        f'<a class="block" href="/themes/{sl}/"><div class="btext"><span class="no{" o" if i == 1 else ""}">{i+1:02d}</span><b>{e(t)}</b><p>{e(x)}</p><span class="more">Read the full analysis</span></div><div class="bchart" role="img" aria-label="Chart: {e(t)}">{bare(charts[i])}</div></a>'
+        for i, (sl, t, x) in enumerate(THEME_PAGES)) + '</div>'
+    basics = f'''<h2>New to the Security Council?</h2><p class="muted">The basics in five boxes. <a href="/about/security-council/">Read the full explainer</a>.</p>
+<div class="basics">
+<a class="basic" href="/about/security-council/"><span class="tag">What it is</span><b>The UN's body for peace and security</b><span>All UN members agree to carry out its decisions (Article 25 of the Charter).</span></a>
+<a class="basic" href="/votes/"><span class="tag">Who sits on it</span><b>15 members, 5 permanent</b><span>China, France, Russia, the United Kingdom and the United States, plus ten members elected for two years.</span></a>
+<a class="basic" href="/themes/the-veto/"><span class="tag">How it decides</span><b>Nine votes and no veto</b><span>A single no from a permanent member blocks a draft. {TOTAL_VETOED} drafts have been vetoed since 1946.</span></a>
+<a class="basic" href="/themes/from-advising-to-ordering/"><span class="tag">What it can do</span><b>Recommend, or order</b><span>Chapter VI to settle disputes; Chapter VII for sanctions, peace operations and the use of force.</span></a>
+<a class="basic" href="/resolutions/"><span class="tag">What a resolution is</span><b>{fmt(len(R))} decisions, numbered since 1946</b><span>Browse every resolution with its full text, vote and citations.</span></a>
+</div>'''
     body = f'''<section class="hero"><div><p class="kicker">An independent record</p><h1>80 years of the UN Security Council</h1>
 <p class="lede">Every UN Security Council resolution, vote and veto since 1946, and what they show about war, power and the Council itself. Every figure on this site is counted from the documents.</p>
 <form class="search-hero" action="/search/" role="search"><label for="hq" class="sr">Search all resolutions</label><input id="hq" name="q" type="search" placeholder="Search all {fmt(len(R))} resolutions: Rwanda, sanctions, 242"><button>Search</button></form>
 <div class="chips"><a class="chip" href="/resolutions/242/">Resolution 242</a><a class="chip" href="/resolutions/1325/">1325 Women and peace</a><a class="chip" href="/resolutions/678/">678 Kuwait</a><a class="chip" href="/themes/the-veto/">Every veto</a></div></div>
 <div class="mini"><p class="meta" style="font-weight:700;color:var(--text);margin-bottom:6px">Resolutions per year, {FULL_YEARS[0]} to {LAST_FULL}</p><svg viewBox="0 0 560 240" role="img" aria-label="Resolutions per year, {FULL_YEARS[0]} to {LAST_FULL}: {Y[peak_y]['n']} in {peak_y}, {Y[LAST_FULL]['n']} in {LAST_FULL}">{mini}</svg><div class="lbl"><span>{FULL_YEARS[0]}</span><b>{Y[peak_y]['n']} in {peak_y}</b><b>{Y[LAST_FULL]['n']} in {LAST_FULL}</b></div></div></section>
 {stats}
-<section class="split"><div><h2>What stands out</h2><p class="muted">Six findings from all {fmt(len(R))} resolutions and every recorded vote. Each opens a page with the charts and the documents behind it.</p><p class="callout">New: the <a href="/language/">Language lab</a> tracks any word through 80 years of resolutions.</p></div><div class="frows">{rows}</div></section>
+{blocks}
 <h2>At a glance</h2>{fig(timeline(), CAP_VOTES)}<p>{glance}</p>
 <h2>The eight eras</h2><p>The periods follow political breaks, not decades. Each break shows in the data: a jump in output, a change in unanimity, a new veto caster or new words.</p>{era_table()}
-<h2>Explore</h2><div class="cards"><a class="card" href="/language/"><b>Language lab</b><span>Track any word or phrase through 80 years of resolutions.</span></a><a class="card" href="/votes/"><b>Members and votes</b><span>Every member's record: abstentions, no votes and vetoes.</span></a><a class="card" href="/themes/new-agendas/"><b>New agendas</b><span>When civilians, women, terrorism, climate and others arrived.</span></a><a class="card" href="/about/security-council/"><b>What is the Security Council?</b><span>Members, veto power, how it decides and what Chapter VII allows.</span></a><a class="card" href="/resolutions/"><b>All resolutions</b><span>Full text, vote and citations for each one.</span></a></div>'''
+{basics}
+<h2>Explore</h2><div class="cards"><a class="card" href="/language/"><b>Language lab</b><span>Track any word or phrase through 80 years of resolutions.</span></a><a class="card" href="/votes/"><b>Members and votes</b><span>Every member's record: abstentions, no votes and vetoes.</span></a><a class="card" href="/themes/new-agendas/"><b>New agendas</b><span>When civilians, women, terrorism, climate and others arrived.</span></a></div>'''
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'WebSite', '@id': SITE + '/#website', 'name': NAME, 'url': SITE + '/', 'publisher': {'@id': SITE + '/#org'},
          'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}},
