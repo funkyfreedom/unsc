@@ -16,7 +16,7 @@ d.text((118*S,29*S),'Security Council Record',font=f('Inter-ExtraBold.otf',30),f
 d.text((W*S-60*S,34*S),'securitycouncilrecord.org',font=f('Inter-Medium.otf',22),fill=light,anchor='ra')
 # headline
 d.text((60*S,122*S),'80 years of the UN Security Council',font=f('Inter-ExtraBold.otf',58),fill=ink)
-d.text((60*S,198*S),'Every resolution, vote and veto since 1946',font=f('Inter-Regular.otf',28),fill=muted)
+d.text((60*S,198*S),'Patterns in themes, voting and language since 1946',font=f('Inter-Regular.otf',28),fill=muted)
 # chart
 Y=json.load(open('dist/assets/years.json'))
 ys=[int(k) for k in Y if int(k)<=2025]; mx=max(Y[str(y)] for y in ys)
@@ -38,4 +38,4 @@ d.line((left*S,base*S,right*S,base*S),fill=(185,184,174),width=2*S)
 for y in (1950,1970,1990,2010):
     i=ys.index(y); d.text(((left+i*bw+bw/2)*S,(base+12)*S),str(y),font=f('Inter-Medium.otf',18),fill=muted,anchor='ma')
 d.text((60*S,600*S),'Resolutions adopted per year, 1946 to 2025',font=f('Inter-Medium.otf',18),fill=muted)
-im.resize((W,H),Image.LANCZOS).save('dist/assets/share.png',optimize=True)
+im.resize((W,H),Image.LANCZOS).save('dist/assets/share-v2.png',optimize=True)

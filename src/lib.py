@@ -180,17 +180,17 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{canonical}">
-<meta property="og:image" content="{SITE}/assets/share.png">
-<meta property="og:image:secure_url" content="{SITE}/assets/share.png">
+<meta property="og:image" content="{SITE}/assets/share-v2.png">
+<meta property="og:image:secure_url" content="{SITE}/assets/share-v2.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Security Council Record: every UN Security Council resolution, vote and veto since 1946">
+<meta property="og:image:alt" content="Security Council Record: understanding the UN Security Council through its resolutions, patterns in themes, voting and language since 1946">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(title)}">
 <meta name="twitter:description" content="{e(desc)}">
-<meta name="twitter:image" content="{SITE}/assets/share.png">
-<meta name="twitter:image:alt" content="Security Council Record: every UN Security Council resolution, vote and veto since 1946">
+<meta name="twitter:image" content="{SITE}/assets/share-v2.png">
+<meta name="twitter:image:alt" content="Security Council Record: understanding the UN Security Council through its resolutions, patterns in themes, voting and language since 1946">
 <meta name="theme-color" content="#1d1d1b">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

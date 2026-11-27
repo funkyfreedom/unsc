@@ -348,7 +348,7 @@ def home():
 <a class="basic" href="/resolutions/"><span class="tag">What a resolution is</span><b>{fmt(len(R))} decisions, numbered since 1946</b><span>Browse every resolution with its full text, vote and citations.</span></a>
 </div></div></section>'''
     body = f'''<section class="hero"><div><p class="kicker">An independent record</p><h1>80 years of the UN Security Council</h1>
-<p class="lede">Every UN Security Council resolution, vote and veto since 1946, and what they show about war, power and the Council itself. Every figure on this site is counted from the documents.</p>
+<p class="lede">Understanding the Security Council through its resolutions: patterns in themes, voting and language since 1946, drawn from every resolution, vote and veto. Every figure is counted from the documents.</p>
 <form class="search-hero" action="/search/" role="search"><label for="hq" class="sr">Search all resolutions</label><input id="hq" name="q" type="search" placeholder="Search all {fmt(len(R))} resolutions: Rwanda, sanctions, 242"><button>Search</button></form>
 <div class="chips"><a class="chip" href="/resolutions/242/">Resolution 242</a><a class="chip" href="/resolutions/1325/">1325 Women and peace</a><a class="chip" href="/resolutions/678/">678 Kuwait</a><a class="chip" href="/themes/the-veto/">Every veto</a></div></div>
 <div class="mini"><p class="meta" style="font-weight:700;color:var(--text);margin-bottom:6px">Resolutions per year, {FULL_YEARS[0]} to {LAST_FULL}</p><svg viewBox="0 0 560 240" role="img" aria-label="Resolutions per year, {FULL_YEARS[0]} to {LAST_FULL}: {Y[peak_y]['n']} in {peak_y}, {Y[LAST_FULL]['n']} in {LAST_FULL}">{mini}</svg><div class="lbl"><span>{FULL_YEARS[0]}</span><b>{Y[peak_y]['n']} in {peak_y}</b><b>{Y[LAST_FULL]['n']} in {LAST_FULL}</b></div></div></section>
@@ -363,7 +363,7 @@ def home():
          'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}},
         {'@type': 'Organization', '@id': SITE + '/#org', 'name': NAME, 'url': SITE + '/', 'logo': {'@type': 'ImageObject', 'url': SITE + '/assets/logo.png', 'width': 512, 'height': 512},
          'founder': {'@type': 'Person', 'name': "Daniel D'Esposito", 'sameAs': 'https://www.linkedin.com/in/ddesposito'}}]}
-    write('/', page('/', 'Every UN Security Council resolution, vote and veto since 1946', f'An independent record of all {fmt(len(R))} UN Security Council resolutions, votes and vetoes since 1946, with eras, themes, full text and search.', body, jsonld=ld))
+    write('/', page('/', 'Understanding the UN Security Council through its resolutions', f'80 years of the UN Security Council, analysed: patterns in themes, voting and language across all {fmt(len(R))} resolutions since 1946, every veto, and full texts you can search.', body, jsonld=ld))
 
 # ------------- ERAS -------------
 def eras_pages():
