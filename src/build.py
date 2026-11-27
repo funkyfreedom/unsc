@@ -573,7 +573,7 @@ def misc_pages():
                            f'''<h1>Super search</h1><p class="lede">Search the full text of every resolution. Narrow by era, region, theme, Charter wording and vote.</p>
 <form class="search-hero" id="sform" role="search"><label for="q" class="sr">Search</label><input id="q" class="q" type="search" placeholder="Words or a phrase in quotes" autocomplete="off"><button>Search</button></form>
 <div class="sgrid"><aside class="facets" id="facets" aria-label="Filters"></aside><div><div class="count" id="count" aria-live="polite"></div><div id="latest"><h2 style="margin-top:0;font-size:22px">Latest resolutions</h2><div class="results">{LATEST}</div><p><a href="/resolutions/">All resolutions by year</a></p></div><div class="results" id="results"></div><p><button class="btn light" id="more" hidden>More results</button></p></div></div>
-<script src="/assets/search.js" type="module"></script>''', wide=True, index=True))
+<script src="/assets/search.js?v={ASSET_V}" type="module"></script>''', wide=True, index=True))
     presets = ['aggression', 'breach of the peace', 'threat to the peace', 'Chapter VII', 'sovereignty', 'self-determination', 'terrorism', 'climate change', 'sexual violence', 'apartheid', 'humanitarian', 'all necessary means']
     chips = ''.join(f'<button type="button" class="chip" data-q="{e(p)}">{e(p)}</button>' for p in presets)
     write('/language/', page('/language/', 'Language lab: how the Security Council\'s words changed', 'Type any word or phrase and see how often UN Security Council resolutions used it, year by year since 1946.',
@@ -582,7 +582,7 @@ def misc_pages():
 <div class="chips">{chips}</div>
 <figure id="lchart" aria-live="polite"></figure><div id="llist"></div>
 <p class="note">How it works: the lab counts resolutions whose text matches the word (and related forms, so "sanction" also finds "sanctions"). Put a phrase in quotes for an exact match. Shares are of all resolutions adopted that year.</p>
-<script src="/assets/lab.js" type="module"></script>'''))
+<script src="/assets/lab.js?v={ASSET_V}" type="module"></script>'''))
     about = f'''<p class="kicker">About</p><h1>About Security Council Record</h1>
 <p class="lede">Security Council Record is an independent, non-commercial overlay on the public documentation of the UN Security Council. It's free to use and free to reuse. It is not affiliated with or endorsed by the United Nations.</p>
 <h2>Who's behind it</h2>

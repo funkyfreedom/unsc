@@ -155,6 +155,13 @@ LOGO = f'''<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><r
 
 NAV = [('/eras/', 'Eras'), ('/themes/', 'Themes'), ('/votes/', 'Members and votes'), ('/resolutions/', 'Resolutions'), ('/language/', 'Language lab'), ('/search/', 'Search'), ('/about/', 'About')]
 
+import hashlib as _h, os as _os
+def _asset_version():
+    here = _os.path.dirname(_os.path.abspath(__file__))
+    blob = CSS.encode() + b''.join(open(_os.path.join(here, f), 'rb').read() for f in ('links.js', 'search.js', 'lab.js'))
+    return _h.sha1(blob).hexdigest()[:10]
+ASSET_V = _asset_version()
+
 def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_extra='', pagefind=False, filters=None, crumbs=None, h1_title=None):
     canonical = SITE + path
     full_title = title if title == NAME else f'{title} | {NAME}'
@@ -182,8 +189,8 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{canonical}">
-<meta property="og:image" content="{SITE}/assets/share-v2.png">
-<meta property="og:image:secure_url" content="{SITE}/assets/share-v2.png">
+<meta property="og:image" content="{SITE}/assets/share-v3.png">
+<meta property="og:image:secure_url" content="{SITE}/assets/share-v3.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Security Council Record: understanding the UN Security Council through its resolutions, patterns in themes, voting and language since 1946">
@@ -191,7 +198,7 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(title)}">
 <meta name="twitter:description" content="{e(desc)}">
-<meta name="twitter:image" content="{SITE}/assets/share-v2.png">
+<meta name="twitter:image" content="{SITE}/assets/share-v3.png">
 <meta name="twitter:image:alt" content="Security Council Record: understanding the UN Security Council through its resolutions, patterns in themes, voting and language since 1946">
 <meta name="theme-color" content="#1d1d1b">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -200,7 +207,7 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v={ASSET_V}">
 {ld}{head_extra}
 </head>
 <body>
@@ -214,7 +221,7 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <p>Built on the documentation of the Security Council, the <a href="https://doi.org/10.5281/zenodo.7319780">CR-UNSC corpus</a> (Fobbe, Gasbarri and Ridi, CC0), the <a href="https://github.com/UNxml/SCresolutions">UN machine-readable resolutions</a> and the <a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a> (Sciences Po Atelier de cartographie and GRAM, CC BY 4.0). <a href="/about/">Method and sources</a>.</p>
 <p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. <a href="/about/#download-the-data">Data</a> and <a href="https://github.com/funkyfreedom/unsc">code</a> are open. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
 </div></footer>
-<script src="/assets/links.js" defer></script>
+<script src="/assets/links.js?v={ASSET_V}" defer></script>
 </body>
 </html>'''
 

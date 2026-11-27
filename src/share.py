@@ -1,4 +1,4 @@
-"""Draw the social share image (dist/assets/share-v2.png). Needs the Inter .otf fonts."""
+"""Draw the social share image (dist/assets/share-v3.png). Needs the Inter .otf fonts."""
 from PIL import Image, ImageDraw, ImageFont
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,4 +42,4 @@ d.line((left*S,base*S,right*S,base*S),fill=(185,184,174),width=2*S)
 for y in (1950,1970,1990,2010):
     i=ys.index(y); d.text(((left+i*bw+bw/2)*S,(base+12)*S),str(y),font=f('Inter-Medium.otf',18),fill=muted,anchor='ma')
 d.text((60*S,600*S),'Resolutions adopted per year, 1946 to 2025',font=f('Inter-Medium.otf',18),fill=muted)
-im.resize((W,H),Image.LANCZOS).save(os.path.join(DIST,'assets','share-v2.png'),optimize=True)
+im.resize((W,H),Image.LANCZOS).save(os.path.join(DIST,'assets','share-v3.png'),optimize=True)
