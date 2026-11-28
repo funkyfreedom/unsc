@@ -211,6 +211,13 @@ def bare(svg):
     svg = re.sub(r'(</title>)<text[^>]*>.*?</text><text[^>]*>.*?</text>', r'\1', svg, count=1)
     return svg.replace(f'viewBox="0 0 {w} {h}"', f'viewBox="0 52 {w} {h-52}"', 1)
 
+MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+def nice_date(d):
+    try:
+        y, m, dd = d.split('-'); return f'{int(dd)} {MONTHS[int(m) - 1]} {y}'
+    except Exception:
+        return d
+
 def fig(svg, cap):
     # title and subtitle as text above the chart, so they wrap on a phone; only the chart scrolls
     m = re.search(r'</title><text[^>]*>(.*?)</text><text[^>]*>(.*?)</text>', svg)
@@ -380,7 +387,7 @@ def home():
          'potentialAction': {'@type': 'SearchAction', 'target': SITE + '/search/?q={q}', 'query-input': 'required name=q'}},
         {'@type': 'Organization', '@id': SITE + '/#org', 'name': NAME, 'url': SITE + '/', 'logo': {'@type': 'ImageObject', 'url': SITE + '/assets/logo.png', 'width': 512, 'height': 512},
          'founder': {'@type': 'Person', 'name': "Daniel D'Esposito", 'sameAs': 'https://www.linkedin.com/in/ddesposito'}}]}
-    write('/', page('/', 'Understanding the UN Security Council through its resolutions', f'80 years of the UN Security Council, analysed: patterns in themes, voting and language across all {fmt(len(R))} resolutions since 1946, every veto, and full texts you can search.', body, jsonld=ld))
+    write('/', page('/', 'Understanding the UN Security Council through its resolutions', f'80 years of the UN Security Council, analysed: patterns in themes, voting and language across {fmt(len(R))} resolutions since 1946, with every vote and veto.', body, jsonld=ld))
 
 # ------------- ERAS -------------
 def eras_pages():
@@ -420,12 +427,13 @@ def theme_pages():
     cards = ''.join(f'<a class="card" href="/themes/{sl}/"><b>{e(t)}</b><span>{e(x)}</span></a>' for sl, t, x in THEME_PAGES)
     cards += '<a class="card" href="/themes/new-agendas/"><b>New agendas and tools</b><span>When each theme now treated as routine first entered the texts.</span></a>'
     write('/themes/', page('/themes/', 'Themes: what 80 years of Security Council resolutions show', 'Six findings from every UN Security Council resolution since 1946: binding power, the language of threat, the veto, unity, wars inside states and Africa.', f'<h1>What the documents show</h1><p class="lede">Six findings, each measured across all {fmt(len(R))} resolutions and every recorded vote.</p><div class="cards">{cards}</div>'))
-    SEO_TITLE = {'the-veto': 'UN Security Council veto power: every veto since 1946', 'language-of-threat': 'Threat to the peace, breach of the peace, aggression: the Security Council\'s words',
+    SEO_TITLE = {'the-veto': 'UN Security Council veto power: every veto since 1946', 'language-of-threat': 'Threat to the peace, breach, aggression: Security Council language',
                  'unity-and-division': 'How the UN Security Council votes: unanimity and division since 1946', 'where-the-council-looks': 'Which countries the UN Security Council deals with most',
                  'from-advising-to-ordering': 'Chapter VII and binding Security Council resolutions', 'wars-inside-states': 'Civilians, women and children in Security Council resolutions'}
     for sl, t, x in THEME_PAGES:
         body = f'<p class="kicker">Theme</p><h1>{e(t)}</h1><p class="lede">{e(x)}</p>{theme_body(sl)}'
-        write(f'/themes/{sl}/', page(f'/themes/{sl}/', SEO_TITLE.get(sl, t), x, body, pagefind=True, filters={'type': 'Analysis'}, crumbs=[('/', 'Home'), ('/themes/', 'Themes'), (None, t)]))
+        SEO_DESC = {'where-the-council-looks': x + ' Which regions and countries the Security Council has dealt with most, era by era, since 1946.'}
+        write(f'/themes/{sl}/', page(f'/themes/{sl}/', SEO_TITLE.get(sl, t), SEO_DESC.get(sl, x), body, pagefind=True, filters={'type': 'Analysis'}, crumbs=[('/', 'Home'), ('/themes/', 'Themes'), (None, t)]))
     write('/themes/new-agendas/', page('/themes/new-agendas/', 'New agendas and tools of the Security Council', 'When protection of civilians, women and peace, terrorism, climate change and other agendas first entered UN Security Council resolutions.',
                                         f'<p class="kicker">Theme</p><h1>New agendas and tools</h1>{agendas_body()}', pagefind=True, filters={'type': 'Analysis'}, crumbs=[('/', 'Home'), ('/themes/', 'Themes'), (None, 'New agendas')]))
 
@@ -461,7 +469,7 @@ def votes_pages():
 {fig(agree_chart(), CAP_VOTES)}<p><a href="/themes/the-veto/">Every veto</a> &middot; <a href="/votes/drafts/">All failed and vetoed drafts</a> &middot; <a href="/themes/unity-and-division/">Unity and division</a></p>
 <h2>All members</h2><p class="meta">Years with at least one recorded vote. Abstentions on adopted resolutions; no votes on adopted and failed drafts; vetoes are no votes by a permanent member on a vetoed draft.</p>
 <div class="tw" tabindex="0" role="region" aria-label="Table"><table><thead><tr><th>Country</th><th class="num">Years</th><th class="num">Abstentions</th><th class="num">No votes</th><th class="num">Vetoes</th></tr></thead><tbody>{rows}</tbody></table></div>'''
-    write('/votes/', page('/votes/', 'UN Security Council members: permanent, elected and how they voted since 1946', f'Voting records of all {len(COUNTRIES)} countries that have sat on the UN Security Council: abstentions, no votes and vetoes since 1946.', body, wide=True))
+    write('/votes/', page('/votes/', 'UN Security Council members and how they voted since 1946', f'Voting records of all {len(COUNTRIES)} countries that have sat on the UN Security Council: abstentions, no votes and vetoes since 1946.', body, wide=True))
     # drafts
     dr = ''.join(f'<tr><td class="num">{d["date"]}</td><td>{e(d["symbol"])}</td><td>{e(d["title"][:150])}</td><td>{"Vetoed by " + e(", ".join(d["vetoed_by"])) if d["outcome"] == "vetoed" else "Not enough votes"}</td><td class="num">{d["yes"]}-{d["no"]}-{d["abst"]}</td></tr>' for d in sorted(DRAFTS, key=lambda d: d['date'], reverse=True))
     write('/votes/drafts/', page('/votes/drafts/', 'Every failed and vetoed Security Council draft since 1946', f'All {len(DRAFTS)} UN Security Council drafts that were vetoed ({TOTAL_VETOED}) or failed for lack of votes ({TOTAL_FAILED}) since 1946.',
@@ -550,7 +558,7 @@ def resolution_pages():
         if fnd: filters['charter'] = fnd
         if r['countries']: filters['country'] = r['countries']
         title = f'UN Security Council Resolution {n} ({r["year"]}): full text and vote'
-        desc = f'Full text and vote of UN Security Council resolution {n} ({r["year"]}), adopted {r["date"]}: {r["topic"]}.'
+        desc = f'{r["topic"].rstrip(".")}. UN Security Council resolution {n}, adopted {nice_date(r["date"])}: full text, how each member voted and what it cites.'
         ld = {'@context': 'https://schema.org', '@type': 'Legislation', 'name': f'Security Council resolution {n} ({r["year"]})', 'legislationIdentifier': r['sym'], 'datePublished': r['date'],
               'about': r['topic'], 'legislationPassedBy': {'@type': 'Organization', 'name': 'United Nations Security Council'}, 'url': SITE + f'/resolutions/{n}/', 'sameAs': r['url_en']}
         write(f'/resolutions/{n}/', page(f'/resolutions/{n}/', title[:110], desc[:300], body, jsonld=ld, pagefind=True, filters=filters, crumbs=[('/', 'Home'), ('/resolutions/', 'Resolutions'), (f'/resolutions/year/{r["year"]}/', str(r['year'])), (None, str(n))]))
@@ -559,17 +567,17 @@ def resolution_pages():
     for y in years:
         rs = [r for r in R if r['year'] == y]
         lst = ''.join(f'<li>{rlink(r["n"])} {e(r["topic"])}</li>' for r in rs)
-        write(f'/resolutions/year/{y}/', page(f'/resolutions/year/{y}/', f'UN Security Council resolutions of {y}', f'All {len(rs)} UN Security Council resolutions adopted in {y}, with full text and votes.',
+        write(f'/resolutions/year/{y}/', page(f'/resolutions/year/{y}/', f'UN Security Council resolutions of {y}', f'All {len(rs)} UN Security Council resolutions adopted in {y}, in order of adoption, each with its subject, full text and how the members voted.',
                                          f'<h1>Resolutions of {y}</h1><p class="lede">{len(rs)} resolutions{f", {Y[y][chr(117)]}% unanimous" if Y[y]["u"] is not None else ""}. {era_link(rs[0]["era"])}.</p><ul class="plain">{lst}</ul>', crumbs=[('/', 'Home'), ('/resolutions/', 'Resolutions'), (None, str(y))]))
         yl += f'<a href="/resolutions/year/{y}/">{y}</a> <span class="meta">{len(rs)}</span> '
-    write('/resolutions/', page('/resolutions/', 'All UN Security Council resolutions since 1946', f'Browse all {fmt(len(R))} UN Security Council resolutions by year, with full text, votes and citations.',
+    write('/resolutions/', page('/resolutions/', 'All UN Security Council resolutions since 1946', f'Browse all {fmt(len(R))} UN Security Council resolutions from 1946 to 2026 by year, each with its full text, how the members voted and the resolutions it cites.',
                                 f'<h1>All resolutions</h1><p class="lede">{fmt(len(R))} resolutions, from resolution 1 on 25 January 1946 to resolution {len(R)} in {years[-1]}. Pick a year, or <a href="/search/">search the full text</a>.</p><div class="yearnav">{yl}</div>'))
 
 # ------------- SEARCH, LAB, ABOUT -------------
 def misc_pages():
     global LATEST
     LATEST = ''.join(f'<div class="r"><a href="/resolutions/{r["n"]}/">UN Security Council Resolution {r["n"]} ({r["year"]})</a> <span class="muted">{e(r["topic"])}</span><p>Adopted {r["date"]}{", unanimously" if r["unanimous"] else ""}.</p></div>' for r in sorted(R, key=lambda r: -r['n'])[:20])
-    write('/search/', page('/search/', 'Search all Security Council resolutions', f'Full-text search with filters across all {fmt(len(R))} UN Security Council resolutions since 1946.',
+    write('/search/', page('/search/', 'Search all Security Council resolutions', f'Search the full text of all {fmt(len(R))} UN Security Council resolutions since 1946, and filter by era, region, theme, Charter wording, vote and country.',
                            f'''<h1>Super search</h1><p class="lede">Search the full text of every resolution. Narrow by era, region, theme, Charter wording and vote.</p>
 <form class="search-hero" id="sform" role="search"><label for="q" class="sr">Search</label><input id="q" class="q" type="search" placeholder="Words or a phrase in quotes" autocomplete="off"><button>Search</button></form>
 <div class="sgrid"><aside class="facets" id="facets" aria-label="Filters"></aside><div><div class="count" id="count" aria-live="polite"></div><div id="latest"><h2 style="margin-top:0;font-size:22px">Latest resolutions</h2><div class="results">{LATEST}</div><p><a href="/resolutions/">All resolutions by year</a></p></div><div class="results" id="results"></div><p><button class="btn light" id="more" hidden>More results</button></p></div></div>

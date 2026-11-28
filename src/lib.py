@@ -164,7 +164,11 @@ ASSET_V = _asset_version()
 
 def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_extra='', pagefind=False, filters=None, crumbs=None, h1_title=None):
     canonical = SITE + path
-    full_title = title if title == NAME else f'{title} | {NAME}'
+    # search results show about 60 to 70 characters: add the site name only when it fits
+    full_title = title if title == NAME or len(title) + len(NAME) + 3 > 70 else f'{title} | {NAME}'
+    # and about 155 characters of description: cut long ones at a word
+    if len(desc) > 155:
+        desc = desc[:154].rsplit(' ', 1)[0].rstrip(',;:.(') + '…'
     nav = ''.join(f'<a href="{h}"{" aria-current=\"page\"" if path.startswith(h) else ""}>{t}</a>' for h, t in NAV)
     ld = f'<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>' if jsonld else ''
     robots = '' if index else '<meta name="robots" content="noindex">'
@@ -223,7 +227,7 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <footer class="site"><div class="bar">
 <p><b>{NAME}</b> is an independent record of every resolution, vote and veto of the United Nations Security Council since 1946. It is not affiliated with or endorsed by the United Nations. For official documents, use the <a href="https://main.un.org/securitycouncil/en">Security Council website</a> and the <a href="https://digitallibrary.un.org">UN Digital Library</a>.</p>
 <p>Built on the documentation of the Security Council, the <a href="https://doi.org/10.5281/zenodo.7319780">CR-UNSC corpus</a> (Fobbe, Gasbarri and Ridi, CC0), the <a href="https://github.com/UNxml/SCresolutions">UN machine-readable resolutions</a> and the <a href="https://github.com/AtelierCartographie/bd-unsc">UNSC votes since 1946 database</a> (Sciences Po Atelier de cartographie and GRAM, CC BY 4.0). <a href="/about/">Method and sources</a>.</p>
-<p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. <a href="/about/#download-the-data">Data</a> and <a href="https://github.com/funkyfreedom/unsc">code</a> are open. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
+<p>Made by <a href="https://www.linkedin.com/in/ddesposito">Daniel D'Esposito</a> with Claude. <a href="/about/">About this project</a>. <a href="/about/security-council/">What is the Security Council?</a> <a href="/about/#download-the-data">Data</a> and <a href="https://github.com/funkyfreedom/unsc">code</a> are open. Free to reuse under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> with credit. Designed to work on any phone and with screen readers.</p>
 </div></footer>
 <script src="/assets/links.js?v={ASSET_V}" defer></script>
 </body>
