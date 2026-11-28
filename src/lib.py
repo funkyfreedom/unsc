@@ -180,6 +180,10 @@ def page(path, title, desc, body, *, wide=False, jsonld=None, index=True, head_e
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="msvalidate.01" content="3F30E75681CFB34133EBA5FD55450EE9">
+<meta name="ahrefs-site-verification" content="ebb65b79c794b0313c0b9b937a9c0469b35cb7fb7b2597aaed0074e2a00688db">
+<script defer src="https://insight.nonprofitbuilder.org/script.js" data-website-id="3cc0a2b5-12e5-42f2-ae53-10f7424fc54f"></script>
+<script src="https://analytics.ahrefs.com/analytics.js" data-key="n2yNdaPUyQwwlBUgCX1n6Q" async></script>
 <title>{e(full_title)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{canonical}">
